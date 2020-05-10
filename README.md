@@ -1,12 +1,11 @@
 # Social Media Crawlers
 
 ## Available Social Media
-[x] Twitter
-[x] Facebook
-[x] Instagram
-[x] Reddit
-[] tiktok
-
+- Twitter :+1:
+- Facebook :+1:
+- Instagram :+1:
+- Reddit :+1:   
+- tiktok :+1:
 
 
 ## How to run these scripts?

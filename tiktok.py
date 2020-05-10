@@ -8,7 +8,7 @@ class Tiktok:
     def scrap(self):
         try:
             URL = f'https://tiktok.com/@{self.username}'
-            headers = {'user-agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'}
+            headers = {'user-agent' : 'Your User Agent'}
             '''
             tiktok server can stop responding if too much request happens, so try modifying requests.get() with below given code:
                 - requests.get(URL,headers = headers,proxies={"http": "http://111.233.225.166:1234"})
@@ -60,5 +60,5 @@ class Tiktok:
 
         except Exception as ex:
             print(ex)        
-user = Tiktok('shahnu.sk27')    
+user = Tiktok('username goes here')   #or pass username  from command line    
 print(user.scrap())                
