@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 class Reddit:
-    def __init__(self,username):
+    def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
-        
     def scrap(self):
         try:
             url = f"https://reddit.com/user/{self.username}"   
@@ -57,5 +57,5 @@ class Reddit:
              print(ex)        
     
        
-reddit = Reddit("username")
+reddit = Reddit()
 print(reddit.scrap())           

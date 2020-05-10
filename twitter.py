@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 class Twitter:
-    def __init__(self,username):
+    def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
     def scrap(self):
         try:
@@ -79,6 +80,7 @@ class Twitter:
             "media_count" : media_count.text.strip()
         }
         except Exception as ex:
-            print(ex)    
-twiter_bot = Twitter("narendramodi")
+            print(ex)   
+             
+twiter_bot = Twitter()  #can pass username here or from command line
 print(twiter_bot.scrap())

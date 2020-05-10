@@ -1,10 +1,10 @@
 import requests 
 from bs4 import BeautifulSoup
 import requests
-
+import sys
 class Facebook():
-    def __init__(self,username):
-        self.username = username
+    def __init__(self,username = sys.argv[len(sys.argv)-1]):
+        self.username = username 
     def scrap(self):
         try:
             URL = f"https://facebook.com/{self.username}"

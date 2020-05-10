@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import sys
 '''can scrap only public instagram accounts'''
 class Instagram:
-    def __init__(self,username):   #constructor, expects username
+    def __init__(self,username = sys.argv[len(sys.argv)-1]):   #constructor
         self.username = username
     def scrap(self):
         try:
@@ -31,7 +32,7 @@ class Instagram:
         except Exception as ex:
             print(ex)            
 
-insta = Instagram("shahnu.sk27")
+insta = Instagram()
 print(insta.scrap())    
 
 
