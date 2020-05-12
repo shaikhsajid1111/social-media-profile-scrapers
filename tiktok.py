@@ -8,27 +8,22 @@ class Tiktok:
     def scrap(self):
         try:
             URL = f'https://tiktok.com/@{self.username}'
-            headers = {'user-agent' : 'Your User Agent'}
-            '''
-            tiktok server can stop responding if too much request happens, so try modifying requests.get() with below given code:
-                - requests.get(URL,headers = headers,proxies={"http": "http://111.233.225.166:1234"})
-                                or
-                - requests.get(URL,headers = headers,verify = False)
-                                or
-                - requests.get(URL,headers = headers,timeout = 5)                
-
-            '''
-            respond = requests.get(URL,headers = headers,proxies={"http": "http://111.233.225.166:1234"})
-            if respond.status_code == 404:
+            print(URL)
+            #headers = {'user-agent' : 'Your User Agent'}
+            
+            response = requests.get(URL)
+            if response.status_code == 404:
                 print("Failed to connect or user does not exist!")
                 exit()
-            if respond.status_code == 200:
-                soup =  BeautifulSoup(respond.content,"html.parser")
-    
+            if response.status_code == 200:
+            
+                soup =  BeautifulSoup(response.content,"html.parser")
+                print(soup.prettify())
                 script_tag = soup.find(
                     'script',{
                         'id' : '__NEXT_DATA__'
                     })
+                
                 json_data = json.loads(str(script_tag.text.strip()))
                 
                 #dict_keys(['props', 'page', 'query', 'buildId', 'assetPrefix', 'isFallback', 'customServer'])
@@ -60,5 +55,5 @@ class Tiktok:
 
         except Exception as ex:
             print(ex)        
-user = Tiktok('username goes here')   #or pass username  from command line    
+user = Tiktok()   #or pass username  from command line    
 print(user.scrap())                

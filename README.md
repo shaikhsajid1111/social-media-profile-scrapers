@@ -6,10 +6,11 @@
 - Instagram :+1:
 - Reddit :+1:   
 - tiktok :+1:
-
+- Medium :+1:
 ## To do
-- Medium :clock1:
+
 - Pinterest :clock1:
+- Quora :clock1:
 ## How to run these scripts?
 1. You need person's social media username to fetch detail
 1. There are 2 ways to input username
