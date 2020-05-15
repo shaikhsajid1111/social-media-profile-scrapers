@@ -17,7 +17,7 @@
     - Edit source code of the script and pass username as a constructor's parameter
     - Pass username from command line
         - Open terminal and type command ```python SCRIPT_NAME USERNAME```
-
+1. To run Tiktok's scripts, install chromedriver from [here]('https://chromedriver.chromium.org/downloads'). Chrome browser's version must be same as chromedriver's version
 **More social media will be added :sleepy:**
 - If server stop responding because of too much request, so try modifying requests.get() with below given code:
     - ```requests.get(URL,headers = headers,proxies={"http": "http://111.233.225.166:1234"})```
