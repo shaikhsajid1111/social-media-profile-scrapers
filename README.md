@@ -8,7 +8,7 @@
 - tiktok :+1:
 - Medium :+1:
 - Quora :+1:
-
+- Linkedin :+1:
 
 ## To do
 
@@ -16,7 +16,7 @@
 
 ## How to run these scripts?
 1. You need person's social media username to fetch detail
-1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory directory
+1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory 
 1. There are 2 ways to input username
     - Edit source code of the script and pass username as a constructor's parameter
     - Pass username from command line
