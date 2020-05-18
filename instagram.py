@@ -2,32 +2,40 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import sys
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
 '''can scrap only public instagram accounts'''
 class Instagram:
     def __init__(self,username = sys.argv[len(sys.argv)-1]):   #constructor
         self.username = username
     def scrap(self):
         try:
-            url = f"https://instagram.com/{self.username}"        
-            respond = requests.get(url)             #requesting
-            if respond.status_code == 404:          #if page not found
-                print("Failed to connect or user does not exist!")
-                exit()
-            if respond.status_code == 200:          #if there is response
-                soup = BeautifulSoup(respond.content,"html.parser")
-                script_tag = soup.find("script",type = "application/ld+json")
-                json_data = json.loads(str(script_tag.text.strip()))
-                name = json_data['name']
-                username = json_data['alternateName']
-                description = json_data['description']
-                URL = json_data['url']
-                profile_image_link = json_data['image']
-                return {
-                 "name" : name,
-                 "username" : username,
-                 "description" : description,
-                 "URL" : URL,
-                 "image_link" : profile_image_link,   
+            URL = f'https://instagram.com/{self.username}'
+        
+            chrome_option = Options()
+            chrome_option.add_argument('--headless')
+            chrome_option.add_argument('--disable-extensions')
+            chrome_option.add_argument('--disable-gpu')
+            driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
+            driver.get(URL)
+            time.sleep(5)
+            response = driver.page_source.encode('utf-8').strip()
+             
+            soup = BeautifulSoup(response,'html.parser')
+            profile_image = soup.find('img',{
+                'class' : '_6q-tv'
+            })['src']
+            bio =soup.find('div',{
+                'class' : '-vDIg'
+            })        
+            more = soup.find('meta',property='og:description')
+        
+            popularity = more['content'].split('-')[0]
+            return {
+                'profile_image' : profile_image,
+                'bio' : bio.text,
+                'popularity' : popularity
                 } 
         except Exception as ex:
             print(ex)            
