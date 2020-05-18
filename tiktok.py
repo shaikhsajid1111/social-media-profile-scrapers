@@ -15,6 +15,7 @@ class Tiktok:
             chrome_option = Options()
             chrome_option.add_argument('--headless')
             chrome_option.add_argument('--disable-extensions')
+            chrome_option.add_argument('--incognito')
             chrome_option.add_argument('--disable-gpu')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(url)

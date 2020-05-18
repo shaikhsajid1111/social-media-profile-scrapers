@@ -9,12 +9,12 @@
 - Medium :+1:
 - Quora :+1:
 - Linkedin :+1:
-
+- Pinterest :+1:
 ## To do
 
-- Pinterest :clock1:
+- Upload screenshots for demo
 
-## How to run these scripts?
+## Installation
 1. You need person's social media username to fetch detail
 1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory 
 1. There are 2 ways to input username
@@ -31,7 +31,6 @@
     - ```requests.get(URL,headers = headers,timeout = 5)```
                             
 
+**If You have suggestions for more social media.Let me know :wink:**
 
 
-
-**More social media will be added :sleepy:**
