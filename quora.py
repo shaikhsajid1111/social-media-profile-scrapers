@@ -18,13 +18,15 @@ class Quora:
             URL = f'https://quora.com/profile/{self.username}'
             print(URL)
           
-            chrome_option = Options()
-            chrome_option.add_argument('--headless')
-            chrome_option.add_argument('--disable-extensions')
+            chrome_option = Options()               #chrome options for driver
+            chrome_option.add_argument('--headless')        #don't open browser window
+            chrome_option.add_argument('--disable-extensions')  #disable all browser extension
             chrome_option.add_argument('--disable-gpu')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(URL)
+
             time.sleep(5)
+            
             response = driver.page_source.encode('utf-8').strip()
              
             soup = BeautifulSoup(response,'html.parser')

@@ -7,10 +7,12 @@ class Twitter:
         self.username = username
     def scrap(self):
         try:
+            #generating URL according to the username
             url = f"https://twitter.com/{self.username}"
-        
+
+            #making response 
             respond = requests.get(url)
-            if respond.status_code == 404:
+            if respond.status_code == 404:          #page not found
                 print("Failed to connect or user does not exist!")
                 exit()
             if respond.status_code == 200:    
@@ -21,17 +23,13 @@ class Twitter:
         })
                 full_name = soup.find('a',{
             "class" : 'fullname'
-        })
+        })              
                 username = soup.find('b',{
             "class" : "u-linkComplex-target"
         })
                 is_verified = soup.find("span",{
            "class" : "ProfileHeaderCard-badges"
        })
-                if is_verified is None:
-                    is_verified = False
-                else:
-                    is_verified = True
                 bio = soup.find("p",{
             "class" : "ProfileHeaderCard-bio"
         })  
@@ -55,11 +53,6 @@ class Twitter:
         }).find("a",{
             "class" : "u-textUserColor"
         })
-                if website is not None:
-                    website = website['title']
-                else:
-                    website = None    
-        
                 media_count = soup.find("a",{
             "class" :"PhotoRail-headingWithCount"
         })
@@ -68,7 +61,7 @@ class Twitter:
             "profile_image" : profile_image_link['src'],
             "full_name" : full_name.text.strip(),
             "username" : username.text.strip(),
-            "account_verified" : is_verified,
+            "account_verified" : True if is_verified is not None else False,
             "bio" : bio.text.strip(),
             "joined_date" : joined_date.text.strip(),
             "birth_date" : birth_date.text.strip(),
@@ -76,7 +69,7 @@ class Twitter:
             "tweets_count" : tweets,
             "following" : following,
             "followers" : followers,
-            "website" : website,    
+            "website" : website['title'] if website is not None else "Not Found!",    
             "media_count" : media_count.text.strip()
         }
         except Exception as ex:

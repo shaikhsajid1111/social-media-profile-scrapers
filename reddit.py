@@ -23,19 +23,10 @@ class Reddit:
                 banners = soup.find("div",{
                     "class" : "_39u8lkB0jifV2dCyGxhTst"
                 })
-
-                if banners is not None:
-                    banners = banners['style'].split("(")[1].split("?")[0]
-                else:
-                    banners = "Not Available!"
                 
                 profile = soup.find("img",{
                     "class" : "_2TN8dEgAQbSyKntWpSPYM7 M_wdt3XN_OW7h8RYbg38W"
                 })
-                if profile is not None:
-                    profile = profile['src'].split("?")[0]
-                else:
-                    profile = "Profile Picture Not Found!"     
                 
                 karma = soup.find("span",{
                     "id" : "profile--id-card--highlight-tooltip--karma"
@@ -48,8 +39,8 @@ class Reddit:
             
                 return {
                     "bio" : bio,
-                    "banner" : banners,
-                    "profile_image" : profile,
+                    "banner" : banners['style'].split("(")[1].split("?")[0] if banners is not None else "Banner Not Found!",
+                    "profile_image" : profile['src'].split("?")[0] if profile is not None else "Profile Image Not Found!",
                     "karma" : karma,
                     "birth_date" : birth_date
                 }

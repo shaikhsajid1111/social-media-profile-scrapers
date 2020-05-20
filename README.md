@@ -33,7 +33,12 @@
                                 or
     - ```requests.get(URL,headers = headers,timeout = 5)```
                                 or
-        Import [proxies](proxies.py) and use random proxies everytime you make a request                             
+    -  Import [proxies](proxies.py) and use random proxies everytime you make a request   
+
+
+## LICENSE 
+
+### Apache License 2.0                                 
 
 **If You have suggestions for more social media.Let me know :wink:**
 

@@ -25,8 +25,7 @@ class Facebook():
                 clg = soup.find("div",{
                     "class" : "_2lzr _50f5 _50f7"
                 })
-                #print(profile_image['src'])
-                #print(facebook_name.text.strip())
+               
                 return {
                     "profile_image" : profile_image['src'],
                     "current_city" : current_city.text.strip(),
