@@ -1,5 +1,19 @@
 # Social Media Profile Crawlers
 
+
+
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
+
+
+
+
+
 ## Available Social Media
 - Twitter :+1:
 - Facebook :+1:
@@ -10,7 +24,7 @@
 - Quora :+1:
 - Linkedin :+1:
 - Pinterest :+1:
-
+- Github :+1:
 
 
 ![Screenshot](screenshots/screenshot1.PNG)
