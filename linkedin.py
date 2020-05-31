@@ -5,6 +5,7 @@ import time
 from bs4 import BeautifulSoup
 import requests
 from random import choice
+import fake_useragent
 '''linkedin have strong security, use VPN or proxies. It'll block your IP address in very few attempts '''
 class Linkedin:
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
@@ -16,12 +17,13 @@ class Linkedin:
             
             
         #automating and opening URL in headless browser
+            headers = fake_useragent.get_user_agent()
             chrome_option = Options()
             chrome_option.add_argument('--headless')            
             chrome_option.add_argument('--disable-extensions')
             chrome_option.add_argument('--disable-gpu')
             chrome_option.add_argument('--incognito')
-           
+            chrome_option.add_argument(f'user-agent={headers}')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(url)
             time.sleep(5)
@@ -88,3 +90,7 @@ class Linkedin:
             print(ex)
 user = Linkedin()
 print(user.scrap())             
+'''
+author : sajid shaikh
+updated : 31-05-2020
+'''

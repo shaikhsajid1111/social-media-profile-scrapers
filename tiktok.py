@@ -4,19 +4,22 @@ import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
-
+from fake_headers import Headers
 class Tiktok:
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
     def scrap(self):
         try:
             url = f'https://tiktok.com/@{self.username}'
+            ua = Headers(headers = False)      #fake user agent
             #automating and opening URL in headless browser
             chrome_option = Options()
             chrome_option.add_argument('--headless')
             chrome_option.add_argument('--disable-extensions')
             chrome_option.add_argument('--incognito')
             chrome_option.add_argument('--disable-gpu')
+            chrome_option.add_argument('--log-level=3')
+            chrome_option.add_argument(f'user-agent={ua}')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(url)
             time.sleep(5)
@@ -61,7 +64,10 @@ class Tiktok:
             print(ex)        
 user = Tiktok()   #or pass username  from command line    
 print(user.scrap())                
-
+'''
+author : sajid shaikh
+updated : 31-05-2020
+'''
     
     
    
