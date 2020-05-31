@@ -3,7 +3,11 @@
 
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+<<<<<<< HEAD
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+=======
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](hhttps://github.com/shaikhsajid1111/social-media-profile-scrapers/graphs/commit-activity)
+>>>>>>> 539e38c3ea83e5d8f183f46047437026d3bae293
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
