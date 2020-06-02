@@ -2,7 +2,10 @@ from bs4 import BeautifulSoup
 import sys
 import json
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 import time
 from fake_headers import Headers
 class Tiktok:
@@ -11,7 +14,7 @@ class Tiktok:
     def scrap(self):
         try:
             url = f'https://tiktok.com/@{self.username}'
-            ua = Headers(headers = False)      #fake user agent
+            ua = Headers().generate()      #fake user agent
             #automating and opening URL in headless browser
             chrome_option = Options()
             chrome_option.add_argument('--headless')
@@ -22,7 +25,9 @@ class Tiktok:
             chrome_option.add_argument(f'user-agent={ua}')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(url)
-            time.sleep(5)
+            #time.sleep(5)
+            wait = WebDriverWait(driver, 10)
+            element = wait.until(EC.title_contains(f"@{self.username}"))
             response = driver.page_source.encode('utf-8').strip()
             
             soup =  BeautifulSoup(response,'html.parser')

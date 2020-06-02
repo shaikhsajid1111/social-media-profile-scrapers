@@ -3,6 +3,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
+from fake_headers import Headers
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 class Quora:
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
@@ -16,17 +20,22 @@ class Quora:
     def scrap(self):
         try:
             URL = f'https://quora.com/profile/{self.username}'
-            print(URL)
-          
+            #print(URL)
+            headers = Headers().generate()
             chrome_option = Options()               #chrome options for driver
             chrome_option.add_argument('--headless')        #don't open browser window
             chrome_option.add_argument('--disable-extensions')  #disable all browser extension
             chrome_option.add_argument('--disable-gpu')
+            chrome_option.add_argument(f'user-agent={headers}')
+            chrome_option.add_argument('--ignore-certificate-errors')
+            chrome_option.add_argument('--ignore-ssl-errors')
+            chrome_option.add_argument('--log-level=3')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(URL)
 
-            time.sleep(5)
-            
+            #time.sleep(5)
+            wait = WebDriverWait(driver, 10)
+            element = wait.until(EC.title_contains('Quora'))
             response = driver.page_source.encode('utf-8').strip()
              
             soup = BeautifulSoup(response,'html.parser')
@@ -86,4 +95,10 @@ class Quora:
         except Exception as ex:
             print(ex)        
 usr = Quora()
-print(usr.scrap())                
+user_data = usr.scrap()
+print(user_data)               
+
+'''
+author : Sajid shaikh
+updated : 31-05-2020
+'''

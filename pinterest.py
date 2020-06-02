@@ -5,11 +5,12 @@ import time
 from bs4 import BeautifulSoup
 import json
 from fake_headers import Headers    #__jsx-2164639479
-import urllib3
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 class Pinterest:
+    '''This class scraps pinterest and returns a dict containing all user data'''
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
       
@@ -17,7 +18,7 @@ class Pinterest:
         try:
             url = f'https://in.pinterest.com/{self.username}'
            
-            ua = Headers(headers=False)       #fake user agent
+            ua = Headers(headers=False).generate()       #fake user agent
             #automating and opening URL in headless browser
             chrome_option = Options()
             chrome_option.add_argument('--headless')
@@ -26,11 +27,14 @@ class Pinterest:
             chrome_option.add_argument('--disable-gpu')
             chrome_option.add_argument('--log-level=3')
             chrome_option.add_argument(f'user-agent={ua}')
+            chrome_option.add_argument('--ignore-certificate-errors')
+            chrome_option.add_argument('--ignore-ssl-errors')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
             driver.get(url)
-            element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "searchBoxContainer"))
-                )
+
+            time.sleep(10)
+            #wait = WebDriverWait(driver, 10)
+            #element = wait.until(EC.title_contains('P'))
             response = driver.page_source.encode('utf-8').strip()  
             
             
@@ -78,4 +82,10 @@ class Pinterest:
             print(ex)    
 
 user = Pinterest()
-print(user.scrap())            
+user_data = user.scrap()
+print(user_data)           
+'''
+author : sajid shaikh
+updated : 31-05-2020
+
+'''

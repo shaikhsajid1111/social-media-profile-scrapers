@@ -4,7 +4,10 @@ import json
 import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 import time
+from fake_headers import Headers
 '''can scrap only public instagram accounts'''
 class Instagram:
     def __init__(self,username = sys.argv[len(sys.argv)-1]):   #constructor
@@ -12,14 +15,20 @@ class Instagram:
     def scrap(self):
         try:
             URL = f'https://instagram.com/{self.username}'
-        
+            headers = Headers(headers=True).generate()
+            
             chrome_option = Options()
             chrome_option.add_argument('--headless')
             chrome_option.add_argument('--disable-extensions')
             chrome_option.add_argument('--disable-gpu')
+            chrome_option.add_argument('--log-level=3')
+            chrome_option.add_argument(f'user-agent={headers}')
             driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
+            
             driver.get(URL)
-            time.sleep(5)
+            
+            wait = WebDriverWait(driver, 10)
+            element = wait.until(EC.title_contains('Instagram'))
             response = driver.page_source.encode('utf-8').strip()
              
             soup = BeautifulSoup(response,'html.parser')
