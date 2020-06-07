@@ -2,17 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 import requests
 import sys
+from fake_headers import Headers
 class Facebook():
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username 
     def scrap(self):
         try:
             URL = f"https://facebook.com/{self.username}"
-            respond = requests.get(URL)
+            headers = Headers().generate()
+            respond = requests.get(URL,headers = headers)
             if respond.status_code == 404:
                 print("Could Not Connect or User does not exist!\n")
             if respond.status_code == 200:
                 soup = BeautifulSoup(respond.content,"html.parser")
+                
                 facebook_name = soup.find("span",{
                     "id":"fb-timeline-cover-name"
                 })
@@ -34,5 +37,5 @@ class Facebook():
         except Exception as ex:
              print(ex)       
 
-fb = Facebook("shaikhsajid1111")
+fb = Facebook()
 print(fb.scrap())        
