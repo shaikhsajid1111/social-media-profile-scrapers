@@ -11,8 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class Pinterest:
     '''This class scraps pinterest and returns a dict containing all user data'''
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
+   
     @staticmethod
     def scrap(username):
         try:
