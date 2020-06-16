@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import sys
-
+from fake_headers import Headers
 class Twitter:
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
@@ -11,7 +11,7 @@ class Twitter:
             url = f"https://twitter.com/{self.username}"
 
             #making response 
-            respond = requests.get(url)
+            respond = requests.get(url,headers = Headers().generate())
             if respond.status_code == 404:          #page not found
                 print("Failed to connect or user does not exist!")
                 exit()
@@ -19,14 +19,11 @@ class Twitter:
                 soup = BeautifulSoup(respond.content,"html.parser")
             #profile image
                 profile_image_link = soup.find("img",{
-            "class" : "ProfileAvatar-image",
+            "class" : "css-9pa8cd",
         })
-                full_name = soup.find('a',{
-            "class" : 'fullname'
-        })              
-                username = soup.find('b',{
-            "class" : "u-linkComplex-target"
-        })
+                full_name = soup.find('span',{
+            "class" : 'css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0'
+        })    
                 is_verified = soup.find("span",{
            "class" : "ProfileHeaderCard-badges"
        })
@@ -60,7 +57,7 @@ class Twitter:
                 return {
             "profile_image" : profile_image_link['src'],
             "full_name" : full_name.text.strip(),
-            "username" : username.text.strip(),
+   
             "account_verified" : True if is_verified is not None else False,
             "bio" : bio.text.strip(),
             "joined_date" : joined_date.text.strip(),
@@ -75,5 +72,10 @@ class Twitter:
         except Exception as ex:
             print(ex)   
              
-twiter_bot = Twitter()  #can pass username here or from command line
+twiter_bot = Twitter("shaikhsajid1111")  #can pass username here or from command line
 print(twiter_bot.scrap())
+
+
+'''
+need to update as per the twitter website update
+'''

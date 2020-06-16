@@ -10,11 +10,10 @@ import time
 from fake_headers import Headers
 '''can scrap only public instagram accounts'''
 class Instagram:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):   #constructor
-        self.username = username
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            URL = f'https://instagram.com/{self.username}'
+            URL = f'https://instagram.com/{username}'
             headers = Headers(headers=True).generate()
             
             chrome_option = Options()
@@ -49,8 +48,5 @@ class Instagram:
         except Exception as ex:
             print(ex)            
 
-insta = Instagram()
-print(insta.scrap())    
-
-
-
+if __name__ == "__main__":
+    print(Instagram.scrap(sys.argv[len(sys.argv)-1]))
