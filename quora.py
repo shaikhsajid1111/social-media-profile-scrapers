@@ -8,19 +8,18 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 class Quora:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
-    def is_none(self,val):
+    @staticmethod
+    def is_none(val):
         if val is None:
             val = 'Not Found!'
             return val
         else:
             return val
-            
-    def scrap(self):
+    @staticmethod        
+    def scrap(username):
         try:
-            URL = f'https://quora.com/profile/{self.username}'
-            #print(URL)
+            URL = f'https://quora.com/profile/{username}'
+            
             headers = Headers().generate()
             chrome_option = Options()               #chrome options for driver
             chrome_option.add_argument('--headless')        #don't open browser window
@@ -43,22 +42,22 @@ class Quora:
             name = soup.find('div',{
                 'class' : "q-text qu-bold"
             })
-            name = self.is_none(name)
+            name = Quora.is_none(name)
             
             profession = soup.find('div',{
                 'class' : 'q-text qu-fontSize--large'
             })
-            profession = self.is_none(profession)
+            profession = Quora.is_none(profession)
             
             profile_image = soup.find('img',{
                 'class' : 'q-image qu-display--block'
             })
-            profile_image = self.is_none(profile_image)
+            profile_image = Quora.is_none(profile_image)
 
             bio = soup.find('p',{
                 'class' : 'q-text qu-display--block'
             })
-            bio = self.is_none(bio)
+            bio = Quora.is_none(bio)
 
             answers_count = soup.find('div',{
                 'class' : 'q-text qu-medium qu-fontSize--small qu-color--red'
@@ -94,11 +93,12 @@ class Quora:
             }
         except Exception as ex:
             print(ex)        
-usr = Quora()
-user_data = usr.scrap()
-print(user_data)               
+
+
+if __name__ == '__main__':
+    print(Quora.scrap(sys.argv[len(sys.argv)-1]))
 
 '''
 author : Sajid shaikh
-updated : 31-05-2020
+updated : 16-06-2020
 '''

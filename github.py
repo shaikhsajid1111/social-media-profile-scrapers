@@ -3,11 +3,10 @@ from bs4 import BeautifulSoup
 import sys
 
 class Github:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            URL = f'https://github.com/{self.username}'    
+            URL = f'https://github.com/{username}'    
             response = requests.get(URL)
             if response.status_code == 404:
                 print("User does not exist!")
@@ -41,5 +40,5 @@ class Github:
         except Exception as ex:
             print(ex)   
 
-usr = Github()
-print(usr.scrap())            
+if __name__ == "__main__":
+    print(Github.scrap(sys.argv[len(sys.argv)-1]))

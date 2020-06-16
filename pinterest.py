@@ -13,10 +13,10 @@ class Pinterest:
     '''This class scraps pinterest and returns a dict containing all user data'''
     def __init__(self,username = sys.argv[len(sys.argv)-1]):
         self.username = username
-      
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            url = f'https://in.pinterest.com/{self.username}'
+            url = f'https://in.pinterest.com/{username}'
            
             ua = Headers(headers=False).generate()       #fake user agent
             #automating and opening URL in headless browser
@@ -81,11 +81,13 @@ class Pinterest:
         except Exception as ex:
             print(ex)    
 
-user = Pinterest()
-user_data = user.scrap()
-print(user_data)           
+
+
+if __name__ == '__main__':
+    print(Pinterest.scrap(sys.argv[len(sys.argv)-1]))
+
 '''
 author : sajid shaikh
-updated : 31-05-2020
+updated : 16-06-2020
 
 '''

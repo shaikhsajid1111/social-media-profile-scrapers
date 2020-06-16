@@ -3,11 +3,10 @@ from bs4 import BeautifulSoup
 import sys
 
 class Reddit:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            url = f"https://reddit.com/user/{self.username}"   
+            url = f"https://reddit.com/user/{username}"   
             headers = {"user-agent" : "Your User Agent Goes here"}     
             respond = requests.get(url,headers = headers)             #requesting
             if respond.status_code == 404:          #if page not found
@@ -48,5 +47,6 @@ class Reddit:
              print(ex)        
     
        
-reddit = Reddit()
-print(reddit.scrap())           
+
+if __name__ == '__main__':
+    print(Reddit.scrap(sys.argv[len(sys.argv)-1]))

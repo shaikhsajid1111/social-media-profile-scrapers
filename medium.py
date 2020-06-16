@@ -4,11 +4,10 @@ import sys
 from fake_headers import Headers
 
 class Medium:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
-    def scrap(self):
+    @staticmethod    
+    def scrap(username):
         try:
-            url = f"https://medium.com/@{self.username}"
+            url = f"https://medium.com/@{username}"
             
             headers = Headers().generate()
             
@@ -64,8 +63,12 @@ class Medium:
                         'bio' : bio.text,
                         'extras' : extra_info
                     }
-med = Medium()
-print(med.scrap())            
+
+
+
+
+if __name__ == '__main__':
+    print(Medium.scrap(sys.argv[ len(sys.argv)-1] ))           
 '''
 last modified on : 16th June,2020
 '''

@@ -4,11 +4,10 @@ import requests
 import sys
 from fake_headers import Headers
 class Facebook():
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username 
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            URL = f"https://facebook.com/{self.username}"
+            URL = f"https://facebook.com/{username}"
             headers = Headers().generate()
             respond = requests.get(URL,headers = headers)
             if respond.status_code == 404:
@@ -37,5 +36,6 @@ class Facebook():
         except Exception as ex:
              print(ex)       
 
-fb = Facebook()
-print(fb.scrap())        
+
+if __name__ == '__main__':
+    print(Facebook.scrap(sys.argv[len(sys.argv)-1]))
