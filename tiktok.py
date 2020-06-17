@@ -9,11 +9,10 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from fake_headers import Headers
 class Tiktok:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            url = f'https://tiktok.com/@{self.username}'
+            url = f'https://tiktok.com/@{username}'
             ua = Headers().generate()      #fake user agent
             #automating and opening URL in headless browser
             chrome_option = Options()
@@ -27,7 +26,7 @@ class Tiktok:
             driver.get(url)
             #time.sleep(5)
             wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains(f"@{self.username}"))
+            element = wait.until(EC.title_contains(f"@{username}"))
             response = driver.page_source.encode('utf-8').strip()
             
             soup =  BeautifulSoup(response,'html.parser')
@@ -67,11 +66,11 @@ class Tiktok:
 
         except Exception as ex:
             print(ex)        
-user = Tiktok()   #or pass username  from command line    
-print(user.scrap())                
+if __name__ == "__main__":
+    print(Tiktok.scrap(sys.argv[len(sys.argv)-1]))             
 '''
 author : sajid shaikh
-updated : 31-05-2020
+updated : 17-06-2020
 '''
     
     

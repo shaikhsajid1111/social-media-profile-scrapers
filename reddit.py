@@ -1,13 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 import sys
-
+from fake_headers import Headers
 class Reddit:
     @staticmethod
     def scrap(username):
         try:
             url = f"https://reddit.com/user/{username}"   
-            headers = {"user-agent" : "Your User Agent Goes here"}     
+            headers = Headers().generate()     
             respond = requests.get(url,headers = headers)             #requesting
             if respond.status_code == 404:          #if page not found
                 print("Failed to connect or user does not exist!")
