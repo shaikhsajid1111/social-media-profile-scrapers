@@ -87,7 +87,7 @@ class Twitter:
             print(ex)   
 
 if __name__ == "__main__":
-    Twitter.scrap(sys.argv[len(sys.argv)-1])  #can pass username here or from command line
+    print(Twitter.scrap(sys.argv[len(sys.argv)-1]))  #can pass username here or from command line
     
 
 '''

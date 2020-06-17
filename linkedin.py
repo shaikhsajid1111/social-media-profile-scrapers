@@ -8,12 +8,10 @@ from random import choice
 import fake_useragent
 '''linkedin have strong security, use VPN or proxies. It'll block your IP address in very few attempts '''
 class Linkedin:
-    def __init__(self,username = sys.argv[len(sys.argv)-1]):
-        self.username = username
-
-    def scrap(self):
+    @staticmethod
+    def scrap(username):
         try:
-            url = f'https://in.linkedin.com/in/{self.username}?trk=public_profile_browsemap_profile-result-card_result-card_full-click'
+            url = f'https://in.linkedin.com/in/{username}?trk=public_profile_browsemap_profile-result-card_result-card_full-click'
             
             
         #automating and opening URL in headless browser
@@ -88,9 +86,9 @@ class Linkedin:
         }
         except Exception as ex:
             print(ex)
-user = Linkedin()
-print(user.scrap())             
+if __name__ == "__main__":
+    print(Linkedin.scrap(sys.argv[len(sys.argv)-1]))             
 '''
 author : sajid shaikh
-updated : 31-05-2020
+updated : 17th June,2020
 '''
