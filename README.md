@@ -32,21 +32,28 @@
 
 1. You need person's social media username to fetch detail
 
-1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory 
+1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory and chromedriver, from [here](https://chromedriver.chromium.org/downloads). 
+ **Chrome browser's version must be compatible with chromedriver's version**
 
 1. There are 2 ways to input username
-    - Edit source code of the script and pass username as a argument for static method
-    - Pass username from command line  . See [demo](screenshots/demo.gif)
+    1. Edit source code of the script and pass username as a argument for static method
+    1. Pass username from command line  . See [demo](screenshots/demo.gif)
         - Open terminal in project's directory and type command ```python SCRIPT_NAME USERNAME```
 
-    - If server stop responding because of too much request, so try modifying ```requests.get()``` with below given code:
-        - ```requests.get(URL,headers = headers,verify = False)```
+- If server stop responding because of too much request, so try modifying ```requests.get()``` with below given code:
+  - ```requests.get(URL,headers = headers,verify = False)```
                                 or
-        - ```requests.get(URL,headers = headers,timeout = 5)```
+  - ```requests.get(URL,headers = headers,timeout = 5)```
                                 or
-        -  Import [proxies](proxies.py) and use random proxies everytime you make a request ```requests.get(URL,proxies=proxy)```
-    
-1. Most scripts use chromedriver, install chromedriver from [here](https://chromedriver.chromium.org/downloads). Chrome browser's version must be same as chromedriver's version
+  -  Import [proxies](proxies.py) and use random proxies everytime you make a request ```requests.get(URL,proxies=proxy)```
+
+## Tech
+
+- [chromdriver](https://chromedriver.chromium.org)
+- [selenium](https://selenium-python.readthedocs.io/installation.html)
+- [requests](https://requests.readthedocs.io/en/master/)
+- [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
+- [fake-headers](https://pypi.org/project/fake-headers/)   
 ## LICENSE 
 
 ### Apache License 2.0                                 
