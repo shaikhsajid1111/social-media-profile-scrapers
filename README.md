@@ -29,28 +29,28 @@
 
 
 ## Installation
+
 1. You need person's social media username to fetch detail
+
 1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory 
+
 1. There are 2 ways to input username
-    - Edit source code of the script and pass username as a constructor's parameter
+    - Edit source code of the script and pass username as a argument for static method
     - Pass username from command line  . See [demo](screenshots/demo.gif)
         - Open terminal in project's directory and type command ```python SCRIPT_NAME USERNAME```
-1. Some scripts use chromdriver, install chromedriver from [here](https://chromedriver.chromium.org/downloads). Chrome browser's version must be same as chromedriver's version
 
-- If server stop responding because of too much request, so try modifying requests.get() with below given code:
-    - ```requests.get(URL,headers = headers,proxies={"http": "http://111.233.225.166:1234"})```
+    - If server stop responding because of too much request, so try modifying ```requests.get()``` with below given code:
+        - ```requests.get(URL,headers = headers,verify = False)```
                                 or
-    - ```requests.get(URL,headers = headers,verify = False)```
+        - ```requests.get(URL,headers = headers,timeout = 5)```
                                 or
-    - ```requests.get(URL,headers = headers,timeout = 5)```
-                                or
-    -  Import [proxies](proxies.py) and use random proxies everytime you make a request   
-
-
+        -  Import [proxies](proxies.py) and use random proxies everytime you make a request ```requests.get(URL,proxies=proxy)```
+    
+1. Most scripts use chromedriver, install chromedriver from [here](https://chromedriver.chromium.org/downloads). Chrome browser's version must be same as chromedriver's version
 ## LICENSE 
 
 ### Apache License 2.0                                 
 
-**If You have suggestions for more social media.Let me know :wink:**
+**If You have suggestions for more social media. Let me know :wink:**
 
 
