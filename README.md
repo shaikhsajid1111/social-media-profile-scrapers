@@ -36,7 +36,7 @@
  **Chrome browser's version must be compatible with chromedriver's version**
 
 1. There are 2 ways to input username
-    1. Edit source code of the script and pass username as a argument for static method
+    1. Edit source code of the script and pass username as a argument for static method and run from terminal with ```python SCRIPT_NAME```
     1. Pass username from command line  . See [demo](screenshots/demo.gif)
         - Open terminal in project's directory and type command ```python SCRIPT_NAME USERNAME```
 
