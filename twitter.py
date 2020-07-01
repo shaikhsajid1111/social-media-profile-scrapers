@@ -1,12 +1,43 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.options import Options as FirefoxOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import sys
 from fake_headers import Headers
 class Twitter:
+
+    @staticmethod   
+    def init_driver(driver_path:str,browser_name:str):
+        def set_properties(browser_option):
+            browser_option.add_argument('--headless')
+            browser_option.add_argument('--disable-extensions')
+            browser_option.add_argument('--incognito')
+            browser_option.add_argument('--disable-gpu')
+            browser_option.add_argument('--log-level=3')
+            browser_option.add_argument(f'user-agent={ua}')
+            return browser_option
+        try:
+            browser_name = browser_name.strip().title()
+
+            ua = Headers().generate()      #fake user agent
+            #automating and opening URL in headless browser
+            if browser_name == "Chrome":
+                browser_option = ChromeOptions()
+                browser_option = set_properties(browser_option)    
+                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
+            elif browser_name == "Firefox":
+                browser_option = FirefoxOptions()
+                browser_option = set_properties(browser_option)
+                driver = webdriver.Firefox(driver_path,options=browser_option)
+            else:
+                driver = "Browser Not Supported!"
+            return driver
+        except Exception as ex:
+            print(ex)
+    
     @staticmethod
     def scrap(username):
         try:
@@ -14,15 +45,8 @@ class Twitter:
             url = f"https://twitter.com/{username}"
 
             ua = Headers().generate()      #fake user agent
-            
-            chrome_option = Options()
-            chrome_option.add_argument('--headless')
-            chrome_option.add_argument('--disable-extensions')
-            chrome_option.add_argument('--incognito')
-            chrome_option.add_argument('--disable-gpu')
-            chrome_option.add_argument('--log-level=3')
-            chrome_option.add_argument(f'user-agent={ua}')
-            driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
+        
+            driver = Twitter.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome")  #chromedriver's path in first argument
             driver.get(url)
             
             wait = WebDriverWait(driver, 10)
@@ -101,5 +125,5 @@ if __name__ == "__main__":
                 joined_date = dates[2].text
 '''
 '''
-last modified : 17th June,2020
+last modified : 1st July,2020
 '''
