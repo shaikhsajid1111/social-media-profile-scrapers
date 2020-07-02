@@ -12,6 +12,7 @@ class Twitter:
     @staticmethod   
     def init_driver(driver_path:str,browser_name:str):
         def set_properties(browser_option):
+            ua = Headers().generate()      #fake user agent
             browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
@@ -22,7 +23,7 @@ class Twitter:
         try:
             browser_name = browser_name.strip().title()
 
-            ua = Headers().generate()      #fake user agent
+            
             #automating and opening URL in headless browser
             if browser_name == "Chrome":
                 browser_option = ChromeOptions()
@@ -114,16 +115,7 @@ if __name__ == "__main__":
     print(Twitter.scrap(sys.argv[len(sys.argv)-1]))  #can pass username here or from command line
     
 
-'''
-            if len(dates) < 3:
-                location = dates[0].text
-                b_day = "Not Given"
-                joined_date = dates[1].text
-            else:
-                location = dates[0].text
-                b_day = dates[1].text
-                joined_date = dates[2].text
-'''
+
 '''
 last modified : 1st July,2020
 '''

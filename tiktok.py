@@ -16,6 +16,7 @@ class Tiktok:
     @staticmethod   
     def init_driver(driver_path:str,browser_name:str):
         def set_properties(browser_option):
+            ua = Headers().generate()      #fake user agent
             browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
@@ -92,6 +93,7 @@ class Tiktok:
             print(ex)        
 if __name__ == "__main__":
     print(Tiktok.scrap(sys.argv[len(sys.argv)-1]))             
+
 '''
 author : sajid shaikh
 updated : 1st July,2020

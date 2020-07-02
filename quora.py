@@ -1,13 +1,44 @@
 import sys
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import time
 from fake_headers import Headers
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 class Quora:
+    @staticmethod   
+    def init_driver(driver_path:str,browser_name:str):
+        def set_properties(browser_option):
+            ua = Headers().generate()      #fake user agent
+            browser_option.add_argument('--headless')
+            browser_option.add_argument('--disable-extensions')
+            browser_option.add_argument('--incognito')
+            browser_option.add_argument('--disable-gpu')
+            browser_option.add_argument('--log-level=3')
+            browser_option.add_argument(f'user-agent={ua}')
+            return browser_option
+        try:
+            browser_name = browser_name.strip().title()
+
+            
+            #automating and opening URL in headless browser
+            if browser_name == "Chrome":
+                browser_option = ChromeOptions()
+                browser_option = set_properties(browser_option)    
+                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
+            elif browser_name == "Firefox":
+                browser_option = FirefoxOptions()
+                browser_option = set_properties(browser_option)
+                driver = webdriver.Firefox(driver_path,options=browser_option)
+            else:
+                driver = "Browser Not Supported!"
+            return driver
+        except Exception as ex:
+            print(ex)
     @staticmethod
     def is_none(val):
         if val is None:
@@ -20,19 +51,9 @@ class Quora:
         try:
             URL = f'https://quora.com/profile/{username}'
             
-            headers = Headers().generate()
-            chrome_option = Options()               #chrome options for driver
-            chrome_option.add_argument('--headless')        #don't open browser window
-            chrome_option.add_argument('--disable-extensions')  #disable all browser extension
-            chrome_option.add_argument('--disable-gpu')
-            chrome_option.add_argument(f'user-agent={headers}')
-            chrome_option.add_argument('--ignore-certificate-errors')
-            chrome_option.add_argument('--ignore-ssl-errors')
-            chrome_option.add_argument('--log-level=3')
-            driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
+            driver = Quora.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome") #chromedriver's path in first argument
             driver.get(URL)
 
-            #time.sleep(5)
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains('Quora'))
             response = driver.page_source.encode('utf-8').strip()
@@ -100,5 +121,5 @@ if __name__ == '__main__':
 
 '''
 author : Sajid shaikh
-updated : 16-06-2020
+updated : 1st July,2020
 '''
