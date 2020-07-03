@@ -52,9 +52,7 @@ class Twitter:
             element = wait.until(EC.title_contains(f"@{username}"))
             response = driver.page_source.encode('utf-8').strip()
             soup =  BeautifulSoup(response,'html.parser')
-            
-          
-
+        
             spans = soup.find_all('span',{
             "class" : 'css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0'
         })  

@@ -5,7 +5,7 @@ import time
 from bs4 import BeautifulSoup
 import requests
 from random import choice
-import fake_useragent
+from fake_headers import Headers
 '''linkedin have strong security, use VPN or proxies. It'll block your IP address in very few attempts '''
 class Linkedin:
     @staticmethod
@@ -15,7 +15,7 @@ class Linkedin:
             
             
         #automating and opening URL in headless browser
-            headers = fake_useragent.get_user_agent()
+            headers = Headers().generate()
             chrome_option = Options()
             chrome_option.add_argument('--headless')            
             chrome_option.add_argument('--disable-extensions')
