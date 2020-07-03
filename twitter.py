@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.chrome.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
@@ -45,8 +45,6 @@ class Twitter:
             #generating URL according to the username
             url = f"https://twitter.com/{username}"
 
-            ua = Headers().generate()      #fake user agent
-        
             driver = Twitter.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome")  #chromedriver's path in first argument
             driver.get(url)
             
@@ -117,5 +115,6 @@ if __name__ == "__main__":
 
 
 '''
+author : sajid shaikh
 last modified : 1st July,2020
 '''

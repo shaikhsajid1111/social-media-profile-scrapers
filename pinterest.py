@@ -1,39 +1,60 @@
 import sys
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import time
 from bs4 import BeautifulSoup
 import json
-from fake_headers import Headers    #__jsx-2164639479
+from fake_headers import Headers    
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class Pinterest:
     '''This class scraps pinterest and returns a dict containing all user data'''
-   
+    @staticmethod   
+    def init_driver(driver_path:str,browser_name:str):
+        """Initialize webdriver"""
+        def set_properties(browser_option):
+            """Set Properties of webdriver"""
+            ua = Headers().generate()      #fake user agent
+            browser_option.add_argument('--headless')
+            browser_option.add_argument('--disable-extensions')
+            browser_option.add_argument('--incognito')
+            browser_option.add_argument('--disable-gpu')
+            browser_option.add_argument('--log-level=3')
+            browser_option.add_argument(f'user-agent={ua}')
+            return browser_option
+        try:
+            browser_name = browser_name.strip().title()
+
+            ua = Headers().generate()      #fake user agent
+            #automating and opening URL in headless browser
+            if browser_name == "Chrome":
+                browser_option = ChromeOptions()
+                browser_option = set_properties(browser_option)    
+                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
+            elif browser_name == "Firefox":
+                browser_option = FirefoxOptions()
+                browser_option = set_properties(browser_option)
+                driver = webdriver.Firefox(driver_path,options=browser_option)
+            else:
+                driver = "Browser Not Supported!"
+            return driver
+        except Exception as ex:
+            print(ex)
+    
     @staticmethod
     def scrap(username):
         try:
-            url = f'https://in.pinterest.com/{username}'
+            URL = f'https://in.pinterest.com/{username}'
            
-            ua = Headers(headers=False).generate()       #fake user agent
-            #automating and opening URL in headless browser
-            chrome_option = Options()
-            chrome_option.add_argument('--headless')
-            chrome_option.add_argument('--disable-extensions')
-            chrome_option.add_argument('--incognito')
-            chrome_option.add_argument('--disable-gpu')
-            chrome_option.add_argument('--log-level=3')
-            chrome_option.add_argument(f'user-agent={ua}')
-            chrome_option.add_argument('--ignore-certificate-errors')
-            chrome_option.add_argument('--ignore-ssl-errors')
-            driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
-            driver.get(url)
+            driver = Pinterest.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome")  #chromedriver's path in first argument
+            
+            driver.get(URL)
 
-            time.sleep(10)
-            #wait = WebDriverWait(driver, 10)
-            #element = wait.until(EC.title_contains('P'))
+            wait = WebDriverWait(driver, 10)
+            element = wait.until(EC.title_contains("Pinterest"))
             response = driver.page_source.encode('utf-8').strip()  
             
             
@@ -81,12 +102,11 @@ class Pinterest:
             print(ex)    
 
 
-
 if __name__ == '__main__':
     print(Pinterest.scrap(sys.argv[len(sys.argv)-1]))
 
 '''
 author : sajid shaikh
-updated : 16-06-2020
+updated : 3rd July,2020
 
 '''
