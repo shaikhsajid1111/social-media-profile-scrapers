@@ -24,23 +24,17 @@
 - Github :+1:
 
 
-![Screenshot](screenshots/screenshot1.PNG)
-
-
 
 ## Installation
 
 1. You need person's social media username to fetch detail
 
-1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by entering command ```pip install -r requirement.txt``` from project's directory and chromedriver, from [here](https://chromedriver.chromium.org/downloads). 
- **Browser's version must be compatible with driver's version**. See how to setup for [firefox](https://stackoverflow.com/questions/42204897/how-to-setup-selenium-python-environment-for-firefox), [Chrome](https://chromedriver.chromium.org/getting-started)
+1. Install dependencies mentioned inside [requirement.txt](requirement.txt) by opening terminal in project's directory and entering command ```pip install -r requirement.txt``` and make sure that you have setup either geckodriver or chromedriver. 
+ **Browser's version must be compatible with driver's version**. See how to setup for [Firefox](https://stackoverflow.com/questions/42204897/how-to-setup-selenium-python-environment-for-firefox), [Chrome.](https://chromedriver.chromium.org/getting-started)
 
-1. There are 2 ways to input username
-    1. Edit source code of the script and pass username as a argument for static method and run from terminal with ```python SCRIPT_NAME```
-    1. Pass username from command line  . See [demo](screenshots/demo.gif)
-        - Open terminal in project's directory and type command ```python SCRIPT_NAME USERNAME```
-    1. In case server stop responding then use [proxies](proxies.py) everytime you make a request. See reference [here](https://stackoverflow.com/questions/11450158/how-do-i-set-proxy-for-chrome-in-python-webdriver)
-    
+1. Edit [settings](settings.py), enter your driver's path and browser's name accordingly. So, script can setup according to your configurations.
+
+1. Run script by opening terminal in project's directory and enter command ```python SCRIPT_NAME USERNAME```, for more help enter command ```python SCRIPT_NAME -h``` . 
 
 
 ## Tech
@@ -49,6 +43,14 @@
 - [selenium](https://selenium-python.readthedocs.io/installation.html)
 - [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
 - [fake-headers](https://pypi.org/project/fake-headers/)   
+
+
+
+![Screenshot](screenshots/screenshot1.PNG)
+
+
+
+
 
 ## LICENSE 
 

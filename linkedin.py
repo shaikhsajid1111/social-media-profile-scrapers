@@ -1,15 +1,20 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import sys
-import time
-from bs4 import BeautifulSoup
-import requests
-from random import choice
-from fake_headers import Headers
+try:
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    import argparse
+    import time
+    from bs4 import BeautifulSoup
+    from fake_headers import Headers
+    from settings import DRIVER_SETTINGS
+except ModuleNotFoundError:
+    print("Download dependencies from requirement.txt")
+except Exception as ex:
+    print(ex)    
 '''linkedin have strong security, use VPN or proxies. It'll block your IP address in very few attempts '''
 class Linkedin:
     @staticmethod
     def scrap(username):
+        """scrap linkedin profile"""
         try:
             url = f'https://in.linkedin.com/in/{username}?trk=public_profile_browsemap_profile-result-card_result-card_full-click'
             
@@ -22,7 +27,14 @@ class Linkedin:
             chrome_option.add_argument('--disable-gpu')
             chrome_option.add_argument('--incognito')
             chrome_option.add_argument(f'user-agent={headers}')
-            driver = webdriver.Chrome('C:\\webdrivers\\chromedriver.exe',options=chrome_option) #chromedriver's path in first argument
+            
+            # ---------- edit below
+            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
+            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
+           
+            driver = Linkedin.init_driver(driver_path,browser)  #browser_name = chrome or firefox
+            ### ----------- edit above^ -------------------
+            
             driver.get(url)
             time.sleep(5)
             response = driver.page_source.encode('utf-8').strip()
@@ -86,9 +98,10 @@ class Linkedin:
         }
         except Exception as ex:
             print(ex)
-if __name__ == "__main__":
-    print(Linkedin.scrap(sys.argv[len(sys.argv)-1]))             
-'''
-author : sajid shaikh
-updated : 17th June,2020
-'''
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("username",help="username to search")
+    args = parser.parse_args()
+    print(Linkedin.scrap(args.username))            
+
+#last updated : 12th July, 2020

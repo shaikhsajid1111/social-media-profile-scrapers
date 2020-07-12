@@ -1,13 +1,16 @@
-import sys
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from fake_headers import Headers
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
+try:
+    import argparse
+    from bs4 import BeautifulSoup
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
+    from fake_headers import Headers
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from settings import DRIVER_SETTINGS
+except ModuleNotFoundError:
+    print("Please download dependencies from requirement.txt")
 class Quora:
     @staticmethod   
     def init_driver(driver_path:str,browser_name:str):
@@ -19,6 +22,8 @@ class Quora:
             browser_option.add_argument('--disable-gpu')
             browser_option.add_argument('--log-level=3')
             browser_option.add_argument(f'user-agent={ua}')
+            browser_option.add_argument('--disable-notifications')
+            browser_option.add_argument('--disable-popup-blocking')
             return browser_option
         try:
             browser_name = browser_name.strip().title()
@@ -32,7 +37,7 @@ class Quora:
             elif browser_name == "Firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
@@ -48,9 +53,12 @@ class Quora:
     @staticmethod        
     def scrap(username):
         try:
-            URL = f'https://quora.com/profile/{username}'
-            
-            driver = Quora.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome") #chromedriver's path in first argument
+            URL = 'https://quora.com/profile/{}'.format(username)
+            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
+            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
+           
+            driver = Quora.init_driver(driver_path,browser)  #browser_name = chrome or firefox
+            ### ----------- edit above^ -------------------
             driver.get(URL)
 
             wait = WebDriverWait(driver, 10)
@@ -114,11 +122,10 @@ class Quora:
         except Exception as ex:
             print(ex)        
 
-
 if __name__ == '__main__':
-    print(Quora.scrap(sys.argv[len(sys.argv)-1]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("username",help="username to search")
+    args = parser.parse_args()
+    print(Quora.scrap(args.username))
 
-'''
-author : Sajid shaikh
-updated : 1st July,2020
-'''
+#last updated - 12th July, 2020

@@ -10,13 +10,14 @@ try:
     from selenium.webdriver.support import expected_conditions as EC
     from fake_headers import Headers
     import argparse
+    from settings import DRIVER_SETTINGS
 except ModuleNotFoundError:
     print("Please download dependecies from requirement.txt")
 except Exception as ex:
     print(ex)    
 class Facebook:
     @staticmethod   
-    def init_driver(driver_path:str,browser_name:str):
+    def init_driver(driver_path,browser_name):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
             browser_option.add_argument('--headless')
@@ -51,8 +52,13 @@ class Facebook:
     def scrap(username):
         try:
             URL = "https://facebook.com/{}".format(username)
-            driver_path = 'Your Driver Path Here'           #enter here your driver path
-            driver = Facebook.init_driver(driver_path,"Chrome OR Firefox")      #enter your browser whether is chrome or firefox
+            
+            
+            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
+            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
+            driver = Facebook.init_driver(driver_path,browser)  #browser_name = chrome or firefox
+        
+            
             
             driver.get(URL)
             #wait until element is present with ID fb-timeline-cover-name

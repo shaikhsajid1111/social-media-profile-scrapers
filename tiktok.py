@@ -1,17 +1,22 @@
-from bs4 import BeautifulSoup
-import sys
-import json
-import selenium
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.chrome.options import Options as FirefoxOptions
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from fake_headers import Headers
+try:
+    from bs4 import BeautifulSoup
+    import argparse
+    import json
+    import selenium
+    from selenium import webdriver
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.chrome.options import Options as FirefoxOptions
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support import expected_conditions as EC
+    from fake_headers import Headers
+    from settings import DRIVER_SETTINGS
+except ModuleNotFoundError:
+    print("Please download dependencies from requirement.txt")
+except Exception as ex:
+    print(ex)
 
 class Tiktok:
-
     @staticmethod   
     def init_driver(driver_path:str,browser_name:str):
         def set_properties(browser_option):
@@ -22,6 +27,8 @@ class Tiktok:
             browser_option.add_argument('--disable-gpu')
             browser_option.add_argument('--log-level=3')
             browser_option.add_argument(f'user-agent={ua}')
+            browser_option.add_argument('--disable-notifications')
+            browser_option.add_argument('--disable-popup-blocking')
             return browser_option
         try:
             browser_name = browser_name.strip().title()
@@ -35,7 +42,7 @@ class Tiktok:
             elif browser_name == "Firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
@@ -45,12 +52,19 @@ class Tiktok:
     @staticmethod
     def scrap(username):
         try:
-            url = f'https://tiktok.com/@{username}'
-            driver = Tiktok.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome")
-            driver.get(url)
+            URL = 'https://tiktok.com/@{}'.format(username)
+            
+             # --------------------- edit below ---------------------
+            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
+            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
+           
+            driver = Tiktok.init_driver(driver_path,browser)  #browser_name = chrome or firefox
+            ### ----------- edit above^ -------------------
+            
+            driver.get(URL)
             
             wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains(f"@{username}"))
+            element = wait.until(EC.title_contains("@{}".format(username)))
             response = driver.page_source.encode('utf-8').strip()
             
             soup =  BeautifulSoup(response,'html.parser')
@@ -90,13 +104,12 @@ class Tiktok:
 
         except Exception as ex:
             print(ex)        
-if __name__ == "__main__":
-    print(Tiktok.scrap(sys.argv[len(sys.argv)-1]))             
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("username",help="username to search")
+    args = parser.parse_args()
+    print(Tiktok.scrap(args.username))
 
-'''
-author : sajid shaikh
-updated : 1st July,2020
-'''
     
     
-   
+   #last updated - 12th July, 2020

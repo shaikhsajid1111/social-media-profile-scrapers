@@ -1,12 +1,18 @@
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import sys
-from fake_headers import Headers
+try:
+    from selenium import webdriver
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support import expected_conditions as EC
+    from bs4 import BeautifulSoup
+    import argparse
+    from fake_headers import Headers
+    from settings import DRIVER_SETTINGS
+except ModuleNotFoundError:
+    print("Please download dependencies from requirement.txt")
+except Exception as ex:
+    print(ex)    
 class Twitter:
 
     @staticmethod   
@@ -19,6 +25,8 @@ class Twitter:
             browser_option.add_argument('--disable-gpu')
             browser_option.add_argument('--log-level=3')
             browser_option.add_argument(f'user-agent={ua}')
+            browser_option.add_argument('--disable-notifications')
+            browser_option.add_argument('--disable-popup-blocking')
             return browser_option
         try:
             browser_name = browser_name.strip().title()
@@ -43,13 +51,19 @@ class Twitter:
     def scrap(username):
         try:
             #generating URL according to the username
-            url = f"https://twitter.com/{username}"
+            URL = "https://twitter.com/{}".format(username)
 
-            driver = Twitter.init_driver('C:\\webdrivers\\chromedriver.exe',"Chrome")  #chromedriver's path in first argument
-            driver.get(url)
+             # --------------------- edit below ---------------------
+            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
+            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
+           
+            driver = Twitter.init_driver(driver_path,browser)  #browser_name = chrome or firefox
+            ### ----------- edit above^ -------------------
+            
+            driver.get(URL)
             
             wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains(f"@{username}"))
+            element = wait.until(EC.title_contains("@{}".format(username)))
             response = driver.page_source.encode('utf-8').strip()
             soup =  BeautifulSoup(response,'html.parser')
         
@@ -107,12 +121,13 @@ class Twitter:
         except Exception as ex:
             print(ex)   
 
-if __name__ == "__main__":
-    print(Twitter.scrap(sys.argv[len(sys.argv)-1]))  #can pass username here or from command line
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("username",help="username to search")
+    args = parser.parse_args()
+    print(Twitter.scrap(args.username))
+
+#last updated - 12th July,2020
     
-
-
-'''
-author : sajid shaikh
-last modified : 1st July,2020
-'''
+    
