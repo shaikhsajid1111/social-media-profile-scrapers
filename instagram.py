@@ -52,11 +52,14 @@ class Instagram:
         try:
             URL = 'https://instagram.com/{}'.format(username)
             
-            #edit below ------------
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Instagram.init_driver(driver_path,browser)  
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Instagram.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
+            
             ### ----------- edit above^ -------------------
             
             driver.get(URL)
@@ -75,12 +78,16 @@ class Instagram:
             more = soup.find('meta',property='og:description')
         
             popularity = more['content'].split('-')[0]
+            driver.close()
+            driver.quit()
             return {
                 'profile_image' : profile_image,
                 'bio' : bio.text,
                 'popularity' : popularity
                 } 
         except Exception as ex:
+            driver.close()
+            driver.quit()
             print(ex)            
 
 if __name__ == '__main__':
@@ -91,4 +98,4 @@ if __name__ == '__main__':
 
 
 
-#last updated no 12th July, 2020
+#last updated on 31st July, 2020

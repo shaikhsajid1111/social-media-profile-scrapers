@@ -53,10 +53,13 @@ class Github:
             URL = 'https://github.com/{}'.format(username)
             
 
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Github.init_driver(driver_path,browser)  
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Github.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()  
            
             
             driver.get(URL)            
@@ -88,6 +91,8 @@ class Github:
             contributions = soup.find_all("h2",{
                 "class" : 'f4 text-normal mb-2'
             })[0]
+            driver.close()
+            driver.quit()
             return {
                     'full_name' : full_name.text if full_name is not None else "Not Found" ,
                     'bio' : bio.text if bio is not None else "Bio Not Found!",
@@ -96,6 +101,8 @@ class Github:
                     "contributions" : contributions.text.strip().replace("\n","")
                                    }
         except Exception as ex:
+            driver.close()
+            driver.quit()
             print(ex)   
 
 if __name__ == '__main__':
@@ -105,4 +112,4 @@ if __name__ == '__main__':
     print(Github.scrap(args.username))
 
 
-#last updated on 12th July, 2020
+#last updated on 31st July, 2020

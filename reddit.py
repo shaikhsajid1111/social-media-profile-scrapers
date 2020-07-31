@@ -52,12 +52,14 @@ class Reddit:
         try:
             URL = "https://reddit.com/user/{}".format(username)
 
-            # --------------------- edit below ---------------------
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Reddit.init_driver(driver_path,browser)  #browser_name = chrome or firefox
-            ### ----------- edit above^ -------------------
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Reddit.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
+            
             driver.get(URL)
             
             wait = WebDriverWait(driver, 10)
@@ -86,7 +88,8 @@ class Reddit:
                     "id" : "profile--id-card--highlight-tooltip--cakeday"
                 }).text.strip()
                 
-            
+            driver.close()
+            driver.quit()
             return {
                     "bio" : bio,
                     "banner" : banners['style'].split("(")[1].split("?")[0] if banners is not None else "Banner Not Found!",
@@ -95,7 +98,9 @@ class Reddit:
                     "cake_date" : cake_date
                 }
         except Exception as ex:
-             print(ex)        
+            driver.close()
+            driver.quit()
+            print(ex)        
     
        
 
@@ -105,4 +110,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Reddit.scrap(args.username))
 
-#last updated - 12th july, 2020    
+#last updated - 31st july, 2020    

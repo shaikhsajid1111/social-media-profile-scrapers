@@ -54,11 +54,13 @@ class Medium:
             URL = "https://medium.com/@{}".format(username)
             
             # ------------ edit below-------------
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Medium.init_driver(driver_path,browser)  #browser_name = chrome or firefox
-            ### ----------- edit above^ -------------------
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Medium.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
             
             driver.get(URL)
             #wait until page loads so title contains "Medium"
@@ -93,6 +95,9 @@ class Medium:
                  
             followings = soup.find('a',{'href' : f"/@{profile_username}/following"}) 
             followers = soup.find('a',{'href' : f"/@{profile_username}/followers"})
+            driver.close()
+            driver.quit()
+            
             return {
                         "profile_image" : profile_image, 
                         'full_name' : full_name.text if full_name is not None else "No name found",
@@ -102,6 +107,8 @@ class Medium:
                         "followers" : followers if followers is not None else "Not Found!"
                     }    
         except Exception as ex:
+            driver.close()
+            driver.quit()
             print(ex)
         
 
@@ -111,4 +118,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Medium.scrap(args.username))
 
-#last modified on : 12th July,2020
+#last modified on : 31st July,2020

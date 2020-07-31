@@ -54,12 +54,13 @@ class Tiktok:
         try:
             URL = 'https://tiktok.com/@{}'.format(username)
             
-             # --------------------- edit below ---------------------
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Tiktok.init_driver(driver_path,browser)  #browser_name = chrome or firefox
-            ### ----------- edit above^ -------------------
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Tiktok.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
             
             driver.get(URL)
             
@@ -88,6 +89,8 @@ class Tiktok:
             heart = user_data['heart']
             video = user_data['video']
             is_verified = user_data['verified']
+            driver.close()
+            driver.quit()
             return {
                     'sec_id' : sec_id,
                     'user_id' : user_id,
@@ -103,6 +106,8 @@ class Tiktok:
                 }
 
         except Exception as ex:
+            driver.close()
+            driver.quit()
             print(ex)        
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -112,4 +117,4 @@ if __name__ == '__main__':
 
     
     
-   #last updated - 12th July, 2020
+   #last updated - 31st July, 2020

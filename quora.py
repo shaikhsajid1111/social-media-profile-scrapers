@@ -54,11 +54,14 @@ class Quora:
     def scrap(username):
         try:
             URL = 'https://quora.com/profile/{}'.format(username)
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Quora.init_driver(driver_path,browser)  #browser_name = chrome or firefox
-            ### ----------- edit above^ -------------------
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Quora.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
+            
             driver.get(URL)
 
             wait = WebDriverWait(driver, 10)
@@ -105,7 +108,8 @@ class Quora:
             more = soup.find_all('div',{
                 'class' : 'q-text qu-truncateLines--2'
             })
-            
+            driver.close()
+            driver.quit()
             return {
                 'name'  :name.text,
                 'profession' : profession.text.strip(),
@@ -120,6 +124,8 @@ class Quora:
                 'more_details' : [more[i].text.replace('\n','').replace('\r','') for i in range(len(more))]
             }
         except Exception as ex:
+            driver.close()
+            driver.quit()
             print(ex)        
 
 if __name__ == '__main__':
@@ -128,4 +134,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Quora.scrap(args.username))
 
-#last updated - 12th July, 2020
+#last updated - 31st July, 2020

@@ -15,6 +15,7 @@ except ModuleNotFoundError:
     print("Please download dependecies from requirement.txt")
 except Exception as ex:
     print(ex)    
+
 class Facebook:
     @staticmethod   
     def init_driver(driver_path,browser_name):
@@ -53,12 +54,13 @@ class Facebook:
         try:
             URL = "https://facebook.com/{}".format(username)
             
-            
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-            driver = Facebook.init_driver(driver_path,browser)  #browser_name = chrome or firefox
-        
-            
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Facebook.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
             
             driver.get(URL)
             #wait until element is present with ID fb-timeline-cover-name
@@ -82,13 +84,16 @@ class Facebook:
             clg = soup.find("div",{
                 "class" : "_2lzr _50f5 _50f7"
             })
-            
+            driver.close()
+            driver.quit()
             return {
                     "profile_image" : profile_image['src'] if profile_image is not None else "Not Found!",
                     "current_city" : current_city.text.strip() if current_city is not None else "Not Found!",
                     "Education" : clg.text.strip() if clg is not None else "Not Found!"
                 }
         except Exception as ex:
+             driver.close()
+             driver.quit()
              print(ex)       
 
 
@@ -98,4 +103,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Facebook.scrap(args.username))
 
-#last updated on 12th July, 2020
+#last updated on 31st July, 2020

@@ -55,13 +55,14 @@ class Pinterest:
         try:
             URL = 'https://in.pinterest.com/{}'.format(username)
             
-            ### -------- edit below 
-            driver_path = DRIVER_SETTINGS['PATH']      #edit your driver's path
-            browser = DRIVER_SETTINGS['BROWSER_NAME']    #chrome or firefox
-           
-            driver = Pinterest.init_driver(driver_path,browser)  #browser_name = chrome or firefox
-            ### ----------- edit above^ -------------------
-
+            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
+                driver_path = DRIVER_SETTINGS['PATH']      
+                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+                driver = Pinterest.init_driver(driver_path,browser)  
+            else:
+                print("Driver is not set!. Please edit settings file for driver configurations.")
+                exit()
+            
 
             driver.get(URL)
 
@@ -94,7 +95,8 @@ class Pinterest:
             following = user_data['following_count']
             country = user_data['country']
             location = user_data['location']
-            
+            driver.close()
+            driver.quit()
             return{
                 'full_name' : full_name,
                 'profile_image' : profile_image,
@@ -111,6 +113,8 @@ class Pinterest:
 
             }
         except Exception as ex:
+            driver.close()
+            driver.quit()
             print(ex)    
 
 
@@ -120,4 +124,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Pinterest.scrap(args.username))
 
-#last updated - 12th July,2020
+#last updated - 31st July,2020
