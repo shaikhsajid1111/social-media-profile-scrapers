@@ -5,24 +5,51 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
-from init_driver import Initialize_driver
+from selenium import webdriver
 import configparser
 import json
 from selenium.common.exceptions import WebDriverException,TimeoutException
-#arhivame
-#@rh1v@me
-config = configparser.ConfigParser()
-try:
-    config.read('settings.ini')
-except FileNotFoundError:
-    print("settings file is missing")
-    exit()
+from fake_headers import Headers
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from settings import DRIVER_SETTINGS
 
 class Set_cookies:
+    @staticmethod   
+    def init_driver(driver_path:str,browser_name:str):
+        def set_properties(browser_option):
+            ua = Headers().generate()      #fake user agent
+            browser_option.add_argument('--headless')
+            browser_option.add_argument('--disable-extensions')
+            browser_option.add_argument('--incognito')
+            browser_option.add_argument('--disable-gpu')
+            browser_option.add_argument('--log-level=3')
+            browser_option.add_argument(f'user-agent={ua}')
+            browser_option.add_argument('--disable-notifications')
+            browser_option.add_argument('--disable-popup-blocking')
+            return browser_option
+        try:
+            browser_name = browser_name.strip().title()
+
+            
+            #automating and opening URL in headless browser
+            if browser_name == "Chrome":
+                browser_option = ChromeOptions()
+                browser_option = set_properties(browser_option)    
+                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
+            elif browser_name == "Firefox":
+                browser_option = FirefoxOptions()
+                browser_option = set_properties(browser_option)
+                driver = webdriver.Firefox(driver_path,options=browser_option)
+            else:
+                driver = "Browser Not Supported!"
+            return driver
+        except Exception as ex:
+            print(ex)
     @staticmethod
     def facebook_login(username,password,driver):
         try:
-            driver = Initialize_driver.init(config['DRIVER']['PATH'],config['DRIVER']['BROWSER'])
+            driver = Set_cookies.init_driver(DRIVER_SETTINGS['PATH'],DRIVER_SETTINGS['BROWSER_NAME'])
         
             driver.get("https://facebook.com/")
 
@@ -61,6 +88,7 @@ class Set_cookies:
     @staticmethod 
     def instagram_login(username,password,driver): 
         try:
+            driver = Set_cookies.init_driver(DRIVER_SETTINGS['PATH'],DRIVER_SETTINGS['BROWSER_NAME'])
             driver.get("https://instagram.com")
             element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME,'username'))) 
 
@@ -131,7 +159,3 @@ if __name__ == "__main__":
     parser.add_argument('media',help="Facebook or Instagram? 'fb' for Facebook and 'ig' for Instagram")
     args = parser.parse_args()
 
-    if args.media.lower() == 'fb':
-        Set_cookies.facebook_login(args.username,args.password,Initialize_driver.init(config['DRIVER']['PATH'],config['DRIVER']['BROWSER']))
-    elif args.media.lower() == 'ig':
-        Set_cookies.instagram_login(args.username,args.password,Initialize_driver.init(config['DRIVER']['PATH'],config['DRIVER']['BROWSER']))    
