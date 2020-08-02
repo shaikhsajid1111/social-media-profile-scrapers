@@ -132,6 +132,27 @@ class Set_cookies:
             return json.dumps({
                 "cookie_not_set" : "Cookie was not set due to {}".format(ex)
             })
+    @staticmethod
+    def linkedin_login(username,password):
+        try:
+            driver = Set_cookies.init_driver(DRIVER_SETTINGS['PATH'],DRIVER_SETTINGS['BROWSER_NAME'])
+            driver.get("https://www.linkedin.com/")
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID,'session_key')))
+            username_input = driver.find_element_by_id("session_key")
+            username_input.send_keys(username)
+            time.sleep(5)
+            password_input = driver.find_element_by_id("session_password")
+            password_input.send_keys(password)
+            time.sleep(3)
+            driver.find_element_by_class_name('sign-in-form__submit-button').click()
+            WebDriverWait(driver,10).until(EC.presence_of_element_located(By.ID,'extended-nav'))
+            Set_cookies.save_cookies(driver,os.path.join(os.getcwd(),"linkedin-cookie.txt"))
+                
+            driver.close()
+            driver.quit()
+            return json.dumps({
+                "cookie_set" : "cookie is set"
+            })
     @staticmethod           
     def load_cookies(driver, location, url=None):
 
@@ -158,4 +179,5 @@ if __name__ == "__main__":
     parser.add_argument("password",help="Password for the account")
     parser.add_argument('media',help="Facebook or Instagram? 'fb' for Facebook and 'ig' for Instagram")
     args = parser.parse_args()
+
 
