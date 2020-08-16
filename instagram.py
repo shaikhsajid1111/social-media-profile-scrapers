@@ -1,5 +1,4 @@
 try:
-    from bs4 import BeautifulSoup
     import argparse
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -60,30 +59,31 @@ class Instagram:
                 print("Driver is not set!. Please edit settings file for driver configurations.")
                 exit()
             
-            ### ----------- edit above^ -------------------
-            
             driver.get(URL)
             
             wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains('Instagram'))
-            response = driver.page_source.encode('utf-8').strip()
-             
-            soup = BeautifulSoup(response,'html.parser')
-            profile_image = soup.find('img',{
-                'class' : '_6q-tv'
-            })['src']
-            bio =soup.find('div',{
-                'class' : '-vDIg'
-            })        
-            more = soup.find('meta',property='og:description')
-        
-            popularity = more['content'].split('-')[0]
+            wait.until(EC.title_contains('@'))
+            
+            
+            data = driver.execute_script('return window._sharedData')['entry_data']
+
+            is_private = data['ProfilePage'][0]['graphql']['user']['is_private']         
+            profile_page = data['ProfilePage'][0]['graphql']['user']
+            bio = profile_page['biography']
+            followings = profile_page['edge_follow']['count']
+            followers= profile_page['edge_followed_by']['count']
+            posts_count = profile_page['edge_owner_to_timeline_media']['count']
+            profile_image = profile_page['profile_pic_url_hd']
+
             driver.close()
             driver.quit()
             return {
                 'profile_image' : profile_image,
-                'bio' : bio.text,
-                'popularity' : popularity
+                'bio' : bio,
+                "posts_count" : posts_count,
+                "followers" : followers,
+                "followings" : followings,
+                "is_private" : is_private
                 } 
         except Exception as ex:
             driver.close()
@@ -98,4 +98,4 @@ if __name__ == '__main__':
 
 
 
-#last updated on 31st July, 2020
+#last updated on 16th August, 2020
