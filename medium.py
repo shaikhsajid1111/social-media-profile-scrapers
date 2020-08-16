@@ -1,6 +1,5 @@
 try:
     import argparse
-    from bs4 import BeautifulSoup
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options as ChromeOptions
     from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -53,7 +52,7 @@ class Medium:
         try:
             URL = "https://medium.com/@{}".format(username)
             
-            # ------------ edit below-------------
+           
             if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
                 driver_path = DRIVER_SETTINGS['PATH']      
                 browser = DRIVER_SETTINGS['BROWSER_NAME']    
@@ -66,50 +65,32 @@ class Medium:
             #wait until page loads so title contains "Medium"
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains('Medium'))
-            #get source code of the page
-            response = driver.page_source.encode('utf-8').strip()
-             
-            soup = BeautifulSoup(response,'html.parser')  
             
-            profile_image = soup.find("meta" , {"property" : "og:image"})["content"]   #profile image from meta tag
-            profile_username = soup.find("meta" , {"property" : "profile:username"})['content'] #profile username so, it can be used to create URL in following,follwers vars
-            #if this finds full name then the account is premium
-            full_name = soup.find('h1',{
-                'class' :  'aw q do ci dp cj dq dr ds z'
-                 
-            })
+            profile_image = driver.find_element_by_tag_name("img").get_attribute("src")  
             
-            bio = soup.find('p',{
-                'class' : 'ep eq ci b cj er es cm z'
-            })
-            is_paid_member = True
-            #if full name was not fetched then account is free
-            if full_name is None:
-                full_name = soup.find('h1',{
-                'class' : 'aw q dg ci dh cj di dj dk z'
-            })      
-                bio = soup.find('p',{
-                'class' : 'eh ei ci b cj ej ek cm z'
-            })
-                is_paid_member = False  
-                 
-            followings = soup.find('a',{'href' : f"/@{profile_username}/following"}) 
-            followers = soup.find('a',{'href' : f"/@{profile_username}/followers"})
+
+
+            full_name = driver.title.split("-")[0] 
+            bio = driver.find_element_by_tag_name("p").text
+            followings = driver.find_element_by_xpath("//a[contains(@href, 'following')]").text.split(" ")[0]
+            followers =  driver.find_element_by_xpath("//a[contains(@href, 'followers')]").text.split(" ")[0]
+            
+            image_class = driver.find_element_by_tag_name("img").get_attribute("class") 
+            is_paid_member = True if image_class == "z cq ci ch" else False 
             driver.close()
-            driver.quit()
-            
+            driver.quit()            
             return {
                         "profile_image" : profile_image, 
-                        'full_name' : full_name.text if full_name is not None else "No name found",
+                        'full_name' : full_name,
+                        "bio" : bio,
                         'is_paid_member' : is_paid_member,
-                        'bio' : bio.text if bio is not None else "Bio Not Found!",
-                        "followings" : followings.text if followings is not None else "Not found!",
-                        "followers" : followers if followers is not None else "Not Found!"
+                        "followings" : followings,
+                        "followers" : followers 
                     }    
         except Exception as ex:
             driver.close()
             driver.quit()
-            print(ex)
+            return {"error" : ex}
         
 
 if __name__ == '__main__':
@@ -118,4 +99,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Medium.scrap(args.username))
 
-#last modified on : 31st July,2020
+#last modified on : 16th August,2020
