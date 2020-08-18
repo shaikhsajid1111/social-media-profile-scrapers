@@ -1,12 +1,12 @@
 try:
-    from bs4 import BeautifulSoup
-    import json
+
     import selenium
     from selenium import webdriver
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.chrome.options import Options as ChromeOptions
     from selenium.webdriver.chrome.options import Options as FirefoxOptions
     from selenium.webdriver.common.by import By
+    from selenium.common.exceptions import NoSuchElementException
     from selenium.webdriver.support import expected_conditions as EC
     from fake_headers import Headers
     import argparse
@@ -67,29 +67,25 @@ class Facebook:
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.presence_of_element_located((By.ID, "fb-timeline-cover-name")))
             #get source code of the page
-            response = driver.page_source.encode('utf-8').strip()
             
+            facebook_name = driver.find_element_by_id("fb-timeline-cover-name")
             
-            soup = BeautifulSoup(response,"html.parser")
-            
-            facebook_name = soup.find("span",{
-                "id":"fb-timeline-cover-name"
-            })
-            profile_image = soup.find("img",{
-                "class" : "_11kf img"
-            })
-            current_city = soup.find("li",{
-                "id" : "current_city"
-            })
-            clg = soup.find("div",{
-                "class" : "_2lzr _50f5 _50f7"
-            })
-            driver.close()
-            driver.quit()
+            try:
+                profile_image = driver.find_element_by_css_selector("img._11kf.img")
+            except NoSuchElementException:
+                profile_image = ""
+            try:
+                current_city = driver.find_element_by_id("current_city")
+            except NoSuchElementException:
+                current_city = ""
+            try:
+                educations = driver.find_element_by_class_name("fbProfileEditExperiences")
+            except NoSuchElementException:
+                educations = ""
             return {
-                    "profile_image" : profile_image['src'] if profile_image is not None else "Not Found!",
-                    "current_city" : current_city.text.strip() if current_city is not None else "Not Found!",
-                    "Education" : clg.text.strip() if clg is not None else "Not Found!"
+                    "profile_image" : profile_image.get_attribute("src") if type(profile_image) is not str else "",
+                    "current_city" : current_city.text.strip() if type(current_city) is not str else "",
+                    "Education" : educations.text if type(educations) is not str else ""
                 }
         except Exception as ex:
              driver.close()
@@ -103,4 +99,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Facebook.scrap(args.username))
 
-#last updated on 31st July, 2020
+#last updated on 18th August, 2020
