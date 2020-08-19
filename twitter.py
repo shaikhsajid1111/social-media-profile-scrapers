@@ -5,10 +5,11 @@ try:
     from selenium.webdriver.firefox.options import Options as FirefoxOptions
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
-    from bs4 import BeautifulSoup
+    from selenium.common.exceptions import NoSuchElementException
     import argparse
     from fake_headers import Headers
     from settings import DRIVER_SETTINGS
+    import re
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
@@ -63,68 +64,75 @@ class Twitter:
             
             driver.get(URL)
             
-            wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains("@{}".format(username)))
-            response = driver.page_source.encode('utf-8').strip()
-            soup =  BeautifulSoup(response,'html.parser')
+            wait = WebDriverWait(driver, 30)
+            element = wait.until(EC.title_contains("@"))
+            
+            full_name = driver.title.split("(")[0]
+       
+            try:
+                banner_image = driver.find_element_by_css_selector("img.css-9pa8cd").get_attribute("src")
+            except NoSuchElementException:
+                banner_image = ""
+            
+    
+            try:
+                driver.find_element_by_css_selector("svg[aria-label='Verified account']")
+                is_verified = True
+            except NoSuchElementException:
+                is_verified = False
+            profile_image = "https://twitter.com/{}/photo".format(username.lower())
+       
+            follow_div = driver.find_element_by_css_selector("div.css-1dbjc4n.r-1mf7evn").text
+            followers = driver.find_element_by_css_selector("a[href='/{}/followers']".format(username)).get_attribute("title")
+            
+            try:
+                bio = driver.find_element_by_css_selector("div[data-testid='UserDescription']").text
+            except NoSuchElementException:
+                bio = ""
         
-            spans = soup.find_all('span',{
-            "class" : 'css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0'
-        })  
-
-            images = soup.find_all('img',{
-            'class' : 'css-9pa8cd'
-        })
             
-            is_verified = soup.find("svg",{
-           "class" : "r-13gxpu9 r-4qtqp9 r-yyyyoo r-1xvli5t r-9cviqr r-dnmrzs r-bnwqim r-1plcrui r-lrvibr",
-           "aria-label" : 'Verified account'
-       })   
-            
-            dates = soup.find_all('span',{
-                'class' : 'css-901oao css-16my406 r-1re7ezh r-4qtqp9 r-1qd0xha r-ad9z0x r-zso239 r-bcqeeo r-qvutc0'
-            })
-
-            if len(images) == 2:
-                profile = images[1]['src']
-                banner = images[0]['src']
-            elif len(images) ==1:
-                profile = images[0]['src']
-                banner = "Not Found"
-            else:
-                profile = "Not Found!"
-                banner = "Not Found!"
-            follows = soup.find_all('a',{
-                'class' : "r-hkyrab r-1loqt21 r-1qd0xha r-a023e6 r-16dba41 r-ad9z0x r-bcqeeo r-qvutc0 css-4rbku5 css-18t94o4 css-901oao",
-                "role" : "link",
-                "data-focusable" : "true"
-            })
-            bio = soup.find("div",{
-                "class" :"css-901oao r-hkyrab r-1qd0xha r-a023e6 r-16dba41 r-ad9z0x r-bcqeeo r-qvutc0",
-                "data-testid" : "UserDescription",
-                "dir" : "auto"
-            })
-            driver.close()
-            driver.quit()
-            return{
-                'full_name' : spans[5].text,
-                'banner' : banner,
-                'profile_image_link' : profile,
-                 "account_verified" : True if is_verified is not None else False,
-                 "birth_date" : "Not Given" if len(dates) < 3 else dates[1].text,
-                 "location" : dates[0].text,
+            try:
+                details = driver.find_element_by_css_selector("[data-testid='UserProfileHeader_Items']")
+                all_spans = details.find_elements_by_tag_name("span")
+                joined_date = ""
                 
-                 "bio" : bio.text if bio is not None else "Bio Not Found!",
-                 "followers" : follows[1]['title'],
-                 "following" : follows[0]['title'],
-                 "joined_date" : dates[1].text if len(dates) < 3 else dates[2].text
+                
+                birth_date = ""
+                for item in all_spans:
+                    if "born" in item.text.lower():
+                        birth_date = item.text
+                    elif "join" in item.text.lower():
+                        joined_date = item.text
+                  
+            except Exception as ex:
+                print(ex)
+            try:
+                website = details.find_element_by_tag_name("a").text
+            except NoSuchElementException:
+                website = ""
+            location = details.text.replace(joined_date,"").replace(website,"") 
+            
+                
+            return{
+                'full_name' : full_name,
+                'banner' : banner_image,
+                'profile_image_link' : profile_image,
+                 "account_verified" : is_verified,
+                 "birth_date" : birth_date,
+                 "location" : location,
+                 "website" : website,
+                 "bio" : bio,
+                 "followers" : followers,
+                 "following" : follow_div.split(" ")[0],
+                 "joined_date" : joined_date
 
             }
               
         except Exception as ex:
+            return {"error" : ex}
             driver.close()
             driver.quit()
-            print(ex)   
+               
 
 
 if __name__ == '__main__':
@@ -133,6 +141,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Twitter.scrap(args.username))
 
-#last updated - 31st July,2020
+#last updated - 19th August,2020
     
     
