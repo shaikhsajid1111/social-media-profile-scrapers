@@ -1,5 +1,4 @@
 try:
-    from bs4 import BeautifulSoup
     import argparse
     import selenium
     from selenium import webdriver
@@ -64,38 +63,26 @@ class Reddit:
             
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains("{}".format(username)))
-            response = driver.page_source.encode('utf-8').strip()
-             
-            soup = BeautifulSoup(response,"html.parser")
-                
-            bio = soup.find("div",{
-                    "class" : "bVfceI5F_twrnRcVO1328"
-                }).text.strip()
-                
-            banners = soup.find("div",{
-                    "class" : "_39u8lkB0jifV2dCyGxhTst"
-                })
-                
-            profile = soup.find("img",{
-                    "class" : "_2TN8dEgAQbSyKntWpSPYM7 M_wdt3XN_OW7h8RYbg38W"
-                })
-                
-            karma = soup.find("span",{
-                    "id" : "profile--id-card--highlight-tooltip--karma"
-                }).text.strip()
-                
-            cake_date = soup.find("span",{
-                    "id" : "profile--id-card--highlight-tooltip--cakeday"
-                }).text.strip()
-                
-            driver.close()
-            driver.quit()
+            
+            name = driver.find_element_by_tag_name("h4").text
+            bio = driver.find_element_by_class_name("bVfceI5F_twrnRcVO1328").text.strip()
+            
+            banner = driver.find_element_by_class_name("_2ZyL7luKQghNeMnczY3gqW").get_attribute("style")
+            
+            
+            profile = driver.find_element_by_css_selector("img._2TN8dEgAQbSyKntWpSPYM7").get_attribute("src")   
+            
+            karma = driver.find_element_by_id("profile--id-card--highlight-tooltip--karma")    
+           
+            cake_date = driver.find_element_by_id("profile--id-card--highlight-tooltip--cakeday")    
+            
             return {
+                    "name" : name,
                     "bio" : bio,
-                    "banner" : banners['style'].split("(")[1].split("?")[0] if banners is not None else "Banner Not Found!",
-                    "profile_image" : profile['src'].split("?")[0] if profile is not None else "Profile Image Not Found!",
-                    "karma" : karma,
-                    "cake_date" : cake_date
+                    "banner" : banner.split('(')[-1].split(')')[0] if banner is not None else "",
+                    "profile_image" : profile,
+                    "karma" : karma.text,
+                    "cake_date" : cake_date.text
                 }
         except Exception as ex:
             driver.close()
@@ -106,8 +93,8 @@ class Reddit:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("username",help="username to search")
+    parser.add_argument("username",help="username to scrap")
     args = parser.parse_args()
     print(Reddit.scrap(args.username))
 
-#last updated - 31st july, 2020    
+#last updated - 19th August, 2020    
