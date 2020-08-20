@@ -131,4 +131,5 @@ dmypy.json
 *.html
 
 /test.py
-
+/test
+/set_cookies.py
