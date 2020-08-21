@@ -4,7 +4,7 @@ try:
     from selenium import webdriver
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.chrome.options import Options as ChromeOptions
-    from selenium.webdriver.chrome.options import Options as FirefoxOptions
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
     from fake_headers import Headers
@@ -19,8 +19,9 @@ class Reddit:
     @staticmethod   
     def init_driver(driver_path,browser_name):
         def set_properties(browser_option):
+            
             ua = Headers().generate()      #fake user agent
-            browser_option.add_argument('--headless')
+            #browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
@@ -71,9 +72,10 @@ class Reddit:
             
             name = driver.find_element_by_tag_name("h4").text
             bio = driver.find_element_by_class_name("bVfceI5F_twrnRcVO1328").text.strip()
-            
-            banner = driver.find_element_by_class_name("_2ZyL7luKQghNeMnczY3gqW").get_attribute("style")
-            
+            try:
+                banner = driver.find_element_by_class_name("_2ZyL7luKQghNeMnczY3gqW").get_attribute("style")
+            except:
+                banner = None
             
             profile = driver.find_element_by_css_selector("img._2TN8dEgAQbSyKntWpSPYM7").get_attribute("src")   
             
