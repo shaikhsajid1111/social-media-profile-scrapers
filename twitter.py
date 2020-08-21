@@ -6,14 +6,19 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.common.exceptions import NoSuchElementException
+    import configparser
     import argparse
     from fake_headers import Headers
-    from settings import DRIVER_SETTINGS
     import re
+    
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
-    print(ex)    
+    print(ex) 
+
+config = configparser.ConfigParser()
+config.read('settings.ini')   
+
 class Twitter:
 
     @staticmethod   
@@ -41,7 +46,7 @@ class Twitter:
             elif browser_name == "Firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
@@ -54,16 +59,16 @@ class Twitter:
             #generating URL according to the username
             URL = "https://twitter.com/{}".format(username)
 
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
-                driver = Twitter.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
+            
+            driver_path = config['DRIVER']['PATH']
+            
+            browser = config['DRIVER']['BROWSER']    
+            driver = Twitter.init_driver(driver_path,browser)  
+            try:
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set")
                 exit()
-            
-            driver.get(URL)
-            
             wait = WebDriverWait(driver, 30)
             element = wait.until(EC.title_contains("@"))
             
@@ -112,7 +117,8 @@ class Twitter:
                 website = ""
             location = details.text.replace(joined_date,"").replace(website,"") 
             
-                
+            driver.close()
+            driver.quit() 
             return{
                 'full_name' : full_name,
                 'banner' : banner_image,
@@ -141,6 +147,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Twitter.scrap(args.username))
 
-#last updated - 19th August,2020
+#last updated - 21st August,2020
     
     

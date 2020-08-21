@@ -4,24 +4,33 @@ try:
     from selenium import webdriver
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.chrome.options import Options as ChromeOptions
-    from selenium.webdriver.chrome.options import Options as FirefoxOptions
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
     from selenium.webdriver.common.by import By
     from selenium.common.exceptions import NoSuchElementException
     from selenium.webdriver.support import expected_conditions as EC
     from fake_headers import Headers
     import argparse
-    from settings import DRIVER_SETTINGS
+    import configparser
+    import time
 except ModuleNotFoundError:
     print("Please download dependecies from requirement.txt")
 except Exception as ex:
     print(ex)    
 
+config = configparser.ConfigParser()
+config.read('settings.ini')  
+
 class Facebook:
+    @staticmethod
+    def quit_driver(driver):
+        driver.close(
+        )
+        driver.quit()
     @staticmethod   
     def init_driver(driver_path,browser_name):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
-            browser_option.add_argument('--headless')
+            #browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
@@ -54,15 +63,17 @@ class Facebook:
         try:
             URL = "https://facebook.com/{}".format(username)
             
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
-                driver = Facebook.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
-                exit()
             
-            driver.get(URL)
+            driver_path = config['DRIVER']['PATH']
+            
+            browser = config['DRIVER']['BROWSER']    
+            driver = Facebook.init_driver(driver_path,browser)  
+        
+            try:
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set!")
+                exit()
             #wait until element is present with ID fb-timeline-cover-name
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.presence_of_element_located((By.ID, "fb-timeline-cover-name")))
@@ -82,11 +93,15 @@ class Facebook:
                 educations = driver.find_element_by_class_name("fbProfileEditExperiences")
             except NoSuchElementException:
                 educations = ""
+            
+        
+            
             return {
                     "profile_image" : profile_image.get_attribute("src") if type(profile_image) is not str else "",
                     "current_city" : current_city.text.strip() if type(current_city) is not str else "",
                     "Education" : educations.text if type(educations) is not str else ""
                 }
+            
         except Exception as ex:
              driver.close()
              driver.quit()
@@ -99,4 +114,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Facebook.scrap(args.username))
 
-#last updated on 18th August, 2020
+#last updated on 21st August, 2020

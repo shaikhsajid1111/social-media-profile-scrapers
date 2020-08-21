@@ -6,11 +6,15 @@ try:
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.webdriver.support.ui import WebDriverWait
     from fake_headers import Headers
-    from settings import DRIVER_SETTINGS
+    import configparser
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
+
+config = configparser.ConfigParser()
+config.read('settings.ini')  
+
 '''can scrap only public instagram accounts'''
 class Instagram:
     @staticmethod   
@@ -51,15 +55,15 @@ class Instagram:
         try:
             URL = 'https://instagram.com/{}'.format(username)
             
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
-                driver = Instagram.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
-                exit()
+            try:
+                driver_path = config['DRIVER']['PATH']
             
-            driver.get(URL)
+                browser = config['DRIVER']['BROWSER']    
+                driver = Instagram.init_driver(driver_path,browser)  
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set")
+                exit()
             
             wait = WebDriverWait(driver, 10)
             wait.until(EC.title_contains('@'))
@@ -98,4 +102,4 @@ if __name__ == '__main__':
 
 
 
-#last updated on 16th August, 2020
+#last updated on 21st August, 2020

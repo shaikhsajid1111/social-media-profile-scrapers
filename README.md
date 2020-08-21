@@ -19,7 +19,6 @@
 - tiktok :+1:
 - Medium :+1:
 - Quora :+1:
-- Linkedin :+1:
 - Pinterest :+1:
 - Github :+1:
 

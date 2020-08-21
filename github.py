@@ -7,13 +7,15 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
-    from settings import DRIVER_SETTINGS
+    import configparser
     from selenium.common.exceptions import NoSuchElementException
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
     
+config = configparser.ConfigParser()
+config.read('settings.ini') 
 class Github:
     @staticmethod   
     def init_driver(driver_path,browser_name):
@@ -53,16 +55,15 @@ class Github:
             URL = 'https://github.com/{}'.format(username)
             
 
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
-                driver = Github.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
-                exit()  
-           
+            try:
+                driver_path = config['DRIVER']['PATH']
             
-            driver.get(URL)            
+                browser = config['DRIVER']['BROWSER']    
+                driver = Github.init_driver(driver_path,browser)  
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set")
+                exit()          
             
             #wait until page loads
             wait = WebDriverWait(driver, 10)
@@ -104,4 +105,4 @@ if __name__ == '__main__':
     print(Github.scrap(args.username))
 
 
-#last updated on 20th August, 2020
+#last updated on 21st August, 2020

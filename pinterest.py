@@ -9,11 +9,13 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
-    from settings import DRIVER_SETTINGS
+    import configparser
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)    
+config = configparser.ConfigParser()
+config.read('settings.ini')  
 class Pinterest:
     '''This class scraps pinterest and returns a dict containing all user data'''
     @staticmethod   
@@ -55,16 +57,15 @@ class Pinterest:
         try:
             URL = 'https://in.pinterest.com/{}'.format(username)
             
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
-                driver = Pinterest.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
-                exit()
+            try:
+                driver_path = config['DRIVER']['PATH']
             
-
-            driver.get(URL)
+                browser = config['DRIVER']['BROWSER']    
+                driver = Pinterest.init_driver(driver_path,browser)  
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set")
+                exit()
 
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains("Pinterest"))

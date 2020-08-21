@@ -7,11 +7,13 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
-    from settings import DRIVER_SETTINGS
+    import configparser
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
+config = configparser.ConfigParser()
+config.read('settings.ini') 
 class Medium:
     @staticmethod   
     def init_driver(driver_path,browser_name):
@@ -19,7 +21,7 @@ class Medium:
         def set_properties(browser_option):
             '''set properties for the driver'''
             ua = Headers().generate()      #fake user agent
-            browser_option.add_argument('--headless')
+            #browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
@@ -53,15 +55,16 @@ class Medium:
             URL = "https://medium.com/@{}".format(username)
             
            
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
-                driver = Medium.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
-                exit()
+            try:
+                driver_path = config['DRIVER']['PATH']
             
-            driver.get(URL)
+                browser = config['DRIVER']['BROWSER']    
+                driver = Medium.init_driver(driver_path,browser)  
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set")
+                exit()
+           
             #wait until page loads so title contains "Medium"
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains('Medium'))

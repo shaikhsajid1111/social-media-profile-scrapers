@@ -10,12 +10,13 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
     from fake_headers import Headers
-    from settings import DRIVER_SETTINGS
+    import configparser
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
-
+config = configparser.ConfigParser()
+config.read('settings.ini') 
 class Tiktok:
     @staticmethod   
     def init_driver(driver_path:str,browser_name:str):
@@ -54,15 +55,18 @@ class Tiktok:
         try:
             URL = 'https://tiktok.com/@{}'.format(username)
             
-            if DRIVER_SETTINGS['PATH'] != "" and DRIVER_SETTINGS['BROWSER_NAME'] != "":
-                driver_path = DRIVER_SETTINGS['PATH']      
-                browser = DRIVER_SETTINGS['BROWSER_NAME']    
+            try:
+                driver_path = config['DRIVER']['PATH']
+            
+                browser = config['DRIVER']['BROWSER']    
                 driver = Tiktok.init_driver(driver_path,browser)  
-            else:
-                print("Driver is not set!. Please edit settings file for driver configurations.")
+                driver.get(URL)
+            except AttributeError:
+                print("Driver is not set")
                 exit()
             
-            driver.get(URL)
+            
+        
             
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains("@{}".format(username)))
@@ -117,4 +121,4 @@ if __name__ == '__main__':
 
     
     
-   #last updated - 31st July, 2020
+   #last updated - 21st August, 2020
