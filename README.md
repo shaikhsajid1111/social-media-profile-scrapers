@@ -45,7 +45,7 @@
 
 
 
-![Screenshot](screenshots/screenshot1.PNG)
+![Screenshot](screenshots/screenshot2.PNG)
 
 
 
