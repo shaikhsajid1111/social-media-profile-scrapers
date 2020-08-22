@@ -32,6 +32,12 @@
  **Browser's version must be compatible with driver's version**. See how to setup for [Firefox](https://stackoverflow.com/questions/42204897/how-to-setup-selenium-python-environment-for-firefox), [Chrome.](https://chromedriver.chromium.org/getting-started)
 
 1. Edit [settings](settings.ini), enter your driver's path and browser's name accordingly. So, script can setup according to your configurations.
+    e.g
+    ```ini
+    [DRIVER]
+    PATH=/usr/bin/chromedriver
+    BROWSER=chrome
+    ``` 
 
 1. Run script by opening terminal in project's directory and enter command ```python SCRIPT_NAME USERNAME```, for more help enter command ```python SCRIPT_NAME -h``` . 
 
@@ -40,7 +46,6 @@
 
 - [chromedriver](https://chromedriver.chromium.org) or [gecko Driver](https://github.com/mozilla/geckodriver/releases)
 - [selenium](https://selenium-python.readthedocs.io/installation.html)
-- [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
 - [fake-headers](https://pypi.org/project/fake-headers/)   
 
 
