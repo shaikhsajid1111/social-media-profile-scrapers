@@ -12,7 +12,8 @@ try:
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
-    print(ex)    
+    print(ex)
+        
 config = configparser.ConfigParser()
 config.read('settings.ini') 
 class Reddit:
@@ -21,7 +22,7 @@ class Reddit:
         def set_properties(browser_option):
             
             ua = Headers().generate()      #fake user agent
-            #browser_option.add_argument('--headless')
+            browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
