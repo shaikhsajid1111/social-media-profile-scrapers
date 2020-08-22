@@ -3,7 +3,6 @@ try:
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options as ChromeOptions
     from selenium.webdriver.firefox.options import Options as FirefoxOptions
-    from bs4 import BeautifulSoup
     import json
     from fake_headers import Headers    
     from selenium.webdriver.common.by import By
@@ -69,16 +68,11 @@ class Pinterest:
 
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains("Pinterest"))
-            response = driver.page_source.encode('utf-8').strip()  
+            
+            script = driver.find_element_by_id("initial-state").get_attribute("innerHTML")
             
             
-            soup = BeautifulSoup(response,'html.parser')    
-            
-            script_tag = soup.find('script',{
-                'id' : 'initial-state'
-            })
-            
-            json_data = json.loads(str(script_tag.text.strip()))
+            json_data = json.loads(script)
             
             data = json_data['resourceResponses'][0]['response']['data']
             user_data = data['user']
@@ -125,4 +119,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Pinterest.scrap(args.username))
 
-#last updated - 31st July,2020
+#last updated - 22nd July,2020
