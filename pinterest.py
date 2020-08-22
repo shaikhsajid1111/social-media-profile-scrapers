@@ -90,9 +90,8 @@ class Pinterest:
             following = user_data['following_count']
             country = user_data['country']
             location = user_data['location']
-            driver.close()
-            driver.quit()
-            return{
+            
+            profile_data = {
                 'full_name' : full_name,
                 'profile_image' : profile_image,
                 'followers' : follower,
@@ -107,6 +106,9 @@ class Pinterest:
                 'is_verified' : is_verified_merchant,
 
             }
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             driver.close()
             driver.quit()

@@ -1,5 +1,4 @@
 try:
-    from bs4 import BeautifulSoup
     import argparse
     import json
     import selenium
@@ -66,19 +65,12 @@ class Tiktok:
                 exit()
             
             
-        
-            
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains("@{}".format(username)))
-            response = driver.page_source.encode('utf-8').strip()
-            
-            soup =  BeautifulSoup(response,'html.parser')
            
-            script_tag = soup.find('script',{
-                        'id' : '__NEXT_DATA__'
-                    })
-                
-            json_data = json.loads(str(script_tag.text.strip()))
+           
+            script_tag = driver.find_element_by_id("__NEXT_DATA__").get_attribute("innerHTML")
+            json_data = json.loads(script_tag)
                 
             #dict_keys(['props', 'page', 'query', 'buildId', 'assetPrefix', 'isFallback', 'customServer'])
             user_data = json_data['props']['pageProps']['userData']
@@ -93,9 +85,8 @@ class Tiktok:
             heart = user_data['heart']
             video = user_data['video']
             is_verified = user_data['verified']
-            driver.close()
-            driver.quit()
-            return {
+            
+            profile_data =  {
                     'sec_id' : sec_id,
                     'user_id' : user_id,
                     'is_secret' : is_secret,
@@ -108,7 +99,9 @@ class Tiktok:
                     'video' : video,
                     'is_verified' : is_verified,
                 }
-
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             driver.close()
             driver.quit()

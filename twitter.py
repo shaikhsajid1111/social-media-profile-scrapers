@@ -117,9 +117,7 @@ class Twitter:
                 website = ""
             location = details.text.replace(joined_date,"").replace(website,"") 
             
-            driver.close()
-            driver.quit() 
-            return{
+            profile_data = {
                 'full_name' : full_name,
                 'banner' : banner_image,
                 'profile_image_link' : profile_image,
@@ -133,7 +131,9 @@ class Twitter:
                  "joined_date" : joined_date
 
             }
-              
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             return {"error" : ex}
             driver.close()
@@ -147,6 +147,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Twitter.scrap(args.username))
 
-#last updated - 21st August,2020
+#last updated - 22nd August,2020
     
     

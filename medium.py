@@ -21,7 +21,7 @@ class Medium:
         def set_properties(browser_option):
             '''set properties for the driver'''
             ua = Headers().generate()      #fake user agent
-            #browser_option.add_argument('--headless')
+            browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
@@ -69,27 +69,29 @@ class Medium:
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains('Medium'))
             
-            profile_image = driver.find_element_by_tag_name("img").get_attribute("src")  
+            profile_image = driver.find_element_by_tag_name("img")  
             
 
 
-            full_name = driver.title.split("-")[0] 
-            bio = driver.find_element_by_tag_name("p").text
-            followings = driver.find_element_by_xpath("//a[contains(@href, 'following')]").text.split(" ")[0]
-            followers =  driver.find_element_by_xpath("//a[contains(@href, 'followers')]").text.split(" ")[0]
+            full_name = driver.title
+            bio = driver.find_element_by_tag_name("p")
+            followings = driver.find_element_by_xpath("//a[contains(@href, 'following')]")
+            followers =  driver.find_element_by_xpath("//a[contains(@href, 'followers')]")
             
             image_class = driver.find_element_by_tag_name("img").get_attribute("class") 
             is_paid_member = True if image_class == "z cq ci ch" else False 
-            driver.close()
-            driver.quit()            
-            return {
-                        "profile_image" : profile_image, 
-                        'full_name' : full_name,
-                        "bio" : bio,
+                        
+            profile_data =  {
+                        "profile_image" : profile_image.get_attribute("src"), 
+                        'full_name' : full_name.split("-")[0],
+                        "bio" : bio.text,
                         'is_paid_member' : is_paid_member,
-                        "followings" : followings,
-                        "followers" : followers 
+                        "followings" : followings.text.split(" ")[0],
+                        "followers" : followers.text.split(" ")[0] 
                     }    
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             driver.close()
             driver.quit()

@@ -79,9 +79,8 @@ class Instagram:
             posts_count = profile_page['edge_owner_to_timeline_media']['count']
             profile_image = profile_page['profile_pic_url_hd']
 
-            driver.close()
-            driver.quit()
-            return {
+            
+            profile_data = {
                 'profile_image' : profile_image,
                 'bio' : bio,
                 "posts_count" : posts_count,
@@ -89,6 +88,9 @@ class Instagram:
                 "followings" : followings,
                 "is_private" : is_private
                 } 
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             driver.close()
             driver.quit()

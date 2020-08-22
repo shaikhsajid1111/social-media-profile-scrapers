@@ -30,7 +30,7 @@ class Facebook:
     def init_driver(driver_path,browser_name):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
-            #browser_option.add_argument('--headless')
+            browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
@@ -95,12 +95,14 @@ class Facebook:
                 educations = ""
             
         
-            
-            return {
+            profile_data =  {
                     "profile_image" : profile_image.get_attribute("src") if type(profile_image) is not str else "",
                     "current_city" : current_city.text.strip() if type(current_city) is not str else "",
                     "Education" : educations.text if type(educations) is not str else ""
                 }
+            driver.close()
+            driver.quit()
+            return profile_data
             
         except Exception as ex:
              driver.close()
@@ -114,4 +116,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Facebook.scrap(args.username))
 
-#last updated on 21st August, 2020
+#last updated on 22nd August, 2020

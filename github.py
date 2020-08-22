@@ -87,12 +87,15 @@ class Github:
                 contributions = driver.find_element_by_css_selector(".js-yearly-contributions")
             except NoSuchElementException:
                 contributions = "" 
-            return {
+            profile_data =  {
                     'full_name' : full_name.text,
                     'bio' : bio.text if type(bio) is not str else "",
                     'location' : location.text if type(location) is not str else "",
                     "contributions" : contributions.text.split(" ")[0] if type(contributions) is not str else ""
                                    }
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             driver.close()
             driver.quit()
@@ -105,4 +108,4 @@ if __name__ == '__main__':
     print(Github.scrap(args.username))
 
 
-#last updated on 21st August, 2020
+#last updated on 22nd August, 2020

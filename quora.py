@@ -17,7 +17,7 @@ class Quora:
     def init_driver(driver_path:str,browser_name:str):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
-            #browser_option.add_argument('--headless')
+            browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
