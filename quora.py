@@ -1,6 +1,5 @@
 try:
     import argparse
-    from bs4 import BeautifulSoup
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options as ChromeOptions
     from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -18,7 +17,7 @@ class Quora:
     def init_driver(driver_path:str,browser_name:str):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
-            browser_option.add_argument('--headless')
+            #browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
             browser_option.add_argument('--incognito')
             browser_option.add_argument('--disable-gpu')
@@ -45,13 +44,6 @@ class Quora:
             return driver
         except Exception as ex:
             print(ex)
-    @staticmethod
-    def is_none(val):
-        if val is None:
-            val = 'Not Found!'
-            return val
-        else:
-            return val
     @staticmethod        
     def scrap(username):
         try:
@@ -70,63 +62,59 @@ class Quora:
 
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains('Quora'))
-            response = driver.page_source.encode('utf-8').strip()
-             
-            soup = BeautifulSoup(response,'html.parser')
-       
-            name = soup.find('div',{
-                'class' : "q-text qu-bold"
-            })
-            name = Quora.is_none(name)
+
+            name = driver.find_element_by_css_selector("div.q-text.qu-bold")
+            try:
+                profession = driver.find_element_by_css_selector("div.q-text.qu-fontSize--large")
+            except:
+                profession = ""
             
-            profession = soup.find('div',{
-                'class' : 'q-text qu-fontSize--large'
-            })
-            profession = Quora.is_none(profession)
-            
-            profile_image = soup.find('img',{
-                'class' : 'q-image qu-display--block'
-            })
-            profile_image = Quora.is_none(profile_image)
-
-            bio = soup.find('p',{
-                'class' : 'q-text qu-display--block'
-            })
-            bio = Quora.is_none(bio)
-
-            answers_count = soup.find('div',{
-                'class' : 'q-text qu-medium qu-fontSize--small qu-color--red'
-            })
-
-            detail_count = soup.find_all('div',{
-                'class' : 'q-text qu-medium qu-fontSize--small qu-color--gray_light'
-            })
-            if detail_count is not None:
+            try:
+                profile_image = driver.find_element_by_css_selector("img.q-image.qu-display--block")
+            except:
+                profile_image = ""
+            try:
+                bio = driver.find_element_by_css_selector("div.q-box.qu-mt--small")
+            except:
+                bio = ""
+            try:
+                driver.find_element_by_class_name("q-absolute").click()
+            except:
+                pass
+            try:
+                answers_count = driver.find_element_by_css_selector('div.q-text.qu-medium.qu-fontSize--small.qu-color--red')
+            except:
+                answers_count = ""
+            try:
+                detail_count = driver.find_elements_by_css_selector('div.q-text.qu-medium.qu-fontSize--small.qu-color--gray_light')
                 questions = detail_count[0]
                 shares = detail_count[1]
                 posts = detail_count[2]
                 followers = detail_count[3]
                 followings = detail_count[4]
-            else:
+            except:
                 questions,shares,posts,followers,followings = ''    
-            more = soup.find_all('div',{
-                'class' : 'q-text qu-truncateLines--2'
-            })
-            driver.close()
-            driver.quit()
-            return {
+    
+            try:
+                more = driver.find_elements_by_css_selector("div.q-text.qu-truncateLines--2")
+            except:
+                more = ""
+            profile_data = {
                 'name'  :name.text,
                 'profession' : profession.text.strip(),
-                'profile_image' : profile_image['src'] if type(profile_image) is not str else profile_image,
-                'bio' : bio if type(bio) is str else bio.text,
-                'answers_count' : answers_count.text.strip(),
-                'questions_count' : questions.text.strip(),
-                'shares' : shares.text.strip(),
-                'posts' : posts.text.strip(),
-                'followers' : followers.text.strip(),
-                'following' : followings.text.strip(),
-                'more_details' : [more[i].text.replace('\n','').replace('\r','') for i in range(len(more))]
+                'profile_image' : profile_image.get_attribute("src"),
+                'bio' : bio.text,
+                'answers_count' : answers_count.text.strip().split(" ")[0],
+                'questions_count' : questions.text.strip().split(" ")[0],
+                'shares' : shares.text.strip().split(" ")[0],
+                'posts' : posts.text.strip().split(" ")[0],
+                'followers' : followers.text.strip().split(" ")[0],
+                'following' : followings.text.strip().split(" ")[0],
+                'more_details' : [more[i].text.replace('\n','').replace('\r','') for i in range(len(more))] if type(more) is not str else ""
             }
+            driver.close()
+            driver.quit()
+            return profile_data
         except Exception as ex:
             driver.close()
             driver.quit()
@@ -138,4 +126,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(Quora.scrap(args.username))
 
-#last updated - 21st August, 2020
+#last updated - 22nd August, 2020
