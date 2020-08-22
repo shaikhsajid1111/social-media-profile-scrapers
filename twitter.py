@@ -88,7 +88,7 @@ class Twitter:
             profile_image = "https://twitter.com/{}/photo".format(username.lower())
        
             follow_div = driver.find_element_by_css_selector("div.css-1dbjc4n.r-1mf7evn").text
-            followers = driver.find_element_by_css_selector("a[href='/{}/followers']".format(username)).get_attribute("title")
+            followers = driver.find_element_by_xpath("//a[contains(@href,'followers')]").get_attribute("title")
             
             try:
                 bio = driver.find_element_by_css_selector("div[data-testid='UserDescription']").text
