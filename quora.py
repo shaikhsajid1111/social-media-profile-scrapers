@@ -7,14 +7,14 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
-    import configparser
+    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.firefox import GeckoDriverManager
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
-config = configparser.ConfigParser()
-config.read('settings.ini') 
+
 class Quora:
     @staticmethod   
-    def init_driver(driver_path:str,browser_name:str):
+    def init_driver(browser_name:str):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
             browser_option.add_argument('--headless')
@@ -31,28 +31,26 @@ class Quora:
 
             
             #automating and opening URL in headless browser
-            if browser_name == "Chrome":
+            if browser_name.lower() == "chrome":
                 browser_option = ChromeOptions()
                 browser_option = set_properties(browser_option)    
-                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
-            elif browser_name == "Firefox":
+                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
+            elif browser_name.lower() == "firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
         except Exception as ex:
             print(ex)
     @staticmethod        
-    def scrap(username):
+    def scrap(username,browser_name):
         try:
             URL = 'https://quora.com/profile/{}'.format(username)
             try:
-                driver_path = config['DRIVER']['PATH']
-            
-                browser = config['DRIVER']['BROWSER']    
-                driver = Quora.init_driver(driver_path,browser)  
+                    
+                driver = Quora.init_driver(browser_name)  
                 driver.get(URL)
             except AttributeError:
                 print("Driver is not set")
@@ -123,7 +121,10 @@ class Quora:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("username",help="username to search")
+    parser.add_argument("--browser",help="What browser your PC have?")
     args = parser.parse_args()
-    print(Quora.scrap(args.username))
+    
+    browser_name = args.browser if args.browser is not None else "chrome"
+    print(Quora.scrap(args.username,browser_name))
 
-#last updated - 22nd August, 2020
+#last updated - 11th September, 2020

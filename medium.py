@@ -7,16 +7,15 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
-    import configparser
+    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.firefox import GeckoDriverManager
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
-config = configparser.ConfigParser()
-config.read('settings.ini') 
 class Medium:
     @staticmethod   
-    def init_driver(driver_path,browser_name):
+    def init_driver(browser_name):
         '''initiailize driver'''
         def set_properties(browser_option):
             '''set properties for the driver'''
@@ -37,11 +36,11 @@ class Medium:
             if browser_name == "Chrome":
                 browser_option = ChromeOptions()
                 browser_option = set_properties(browser_option)    
-                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
+                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
             elif browser_name == "Firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
@@ -49,17 +48,14 @@ class Medium:
             print(ex)
     
     @staticmethod    
-    def scrap(username):
+    def scrap(username,browser_name):
         """scrap medium's profile"""
         try:
             URL = "https://medium.com/@{}".format(username)
             
            
             try:
-                driver_path = config['DRIVER']['PATH']
-            
-                browser = config['DRIVER']['BROWSER']    
-                driver = Medium.init_driver(driver_path,browser)  
+                driver = Medium.init_driver(browser_name)  
                 driver.get(URL)
             except AttributeError:
                 print("Driver is not set")
@@ -69,7 +65,7 @@ class Medium:
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains('Medium'))
             
-            profile_image = driver.find_element_by_tag_name("img")  
+            profile_image = driver.find_element_by_css_selector("img")  
             
 
 
@@ -101,7 +97,10 @@ class Medium:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("username",help="username to search")
+    parser.add_argument("--browser",help="What browser your PC have?")
+    
     args = parser.parse_args()
-    print(Medium.scrap(args.username))
+    browser_name = args.browser if args.browser is not None else "chrome"
+    print(Medium.scrap(args.username,browser_name))
 
-#last modified on : 16th August,2020
+#last modified on : 11th September,2020

@@ -8,17 +8,17 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
-    import configparser
+    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.firefox import GeckoDriverManager
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)    
-config = configparser.ConfigParser()
-config.read('settings.ini')  
+ 
 class Pinterest:
     '''This class scraps pinterest and returns a dict containing all user data'''
     @staticmethod   
-    def init_driver(driver_path:str,browser_name:str):
+    def init_driver(browser_name:str):
         """Initialize webdriver"""
         def set_properties(browser_option):
             """Set Properties of webdriver"""
@@ -37,14 +37,14 @@ class Pinterest:
 
             ua = Headers().generate()      #fake user agent
             #automating and opening URL in headless browser
-            if browser_name == "Chrome":
+            if browser_name.lower() == "chrome":
                 browser_option = ChromeOptions()
                 browser_option = set_properties(browser_option)    
-                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
-            elif browser_name == "Firefox":
+                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
+            elif browser_name.lower() == "firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
@@ -52,15 +52,12 @@ class Pinterest:
             print(ex)
     
     @staticmethod
-    def scrap(username):
+    def scrap(username,browser_name):
         try:
             URL = 'https://in.pinterest.com/{}'.format(username)
             
             try:
-                driver_path = config['DRIVER']['PATH']
-            
-                browser = config['DRIVER']['BROWSER']    
-                driver = Pinterest.init_driver(driver_path,browser)  
+                driver = Pinterest.init_driver(browser_name)  
                 driver.get(URL)
             except AttributeError:
                 print("Driver is not set")
@@ -118,7 +115,10 @@ class Pinterest:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("username",help="username to search")
-    args = parser.parse_args()
-    print(Pinterest.scrap(args.username))
+    parser.add_argument("--browser",help="What browser your PC have?")
 
-#last updated - 22nd July,2020
+    args = parser.parse_args()
+    browser_name = args.browser if args.browser is not None else "chrome"
+    print(Pinterest.scrap(args.username,browser_name))
+
+#last updated - 11th September,2020

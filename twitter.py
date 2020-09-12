@@ -6,23 +6,21 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.common.exceptions import NoSuchElementException
-    import configparser
     import argparse
     from fake_headers import Headers
-    import re
-    
+    from webdriver_manager.chrome import ChromeDriverManager
+    from webdriver_manager.firefox import GeckoDriverManager
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex) 
 
-config = configparser.ConfigParser()
-config.read('settings.ini')   
+   
 
 class Twitter:
 
     @staticmethod   
-    def init_driver(driver_path:str,browser_name:str):
+    def init_driver(browser_name:str):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
             browser_option.add_argument('--headless')
@@ -39,14 +37,15 @@ class Twitter:
 
             
             #automating and opening URL in headless browser
-            if browser_name == "Chrome":
+            if browser_name.lower() == "chrome":
                 browser_option = ChromeOptions()
                 browser_option = set_properties(browser_option)    
-                driver = webdriver.Chrome(driver_path,options=browser_option) #chromedriver's path in first argument
-            elif browser_name == "Firefox":
+                
+                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
+            elif browser_name.lower() == "firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(executable_path=driver_path,options=browser_option)
+                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),options=browser_option)
             else:
                 driver = "Browser Not Supported!"
             return driver
@@ -54,16 +53,13 @@ class Twitter:
             print(ex)
     
     @staticmethod
-    def scrap(username):
+    def scrap(username,browser_name):
         try:
             #generating URL according to the username
             URL = "https://twitter.com/{}".format(username)
 
-            
-            driver_path = config['DRIVER']['PATH']
-            
-            browser = config['DRIVER']['BROWSER']    
-            driver = Twitter.init_driver(driver_path,browser)  
+                
+            driver = Twitter.init_driver(browser_name)  
             try:
                 driver.get(URL)
             except AttributeError:
@@ -144,9 +140,12 @@ class Twitter:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("username",help="username to search")
+    parser.add_argument("--browser",help="What browser your PC have?")
+    
     args = parser.parse_args()
-    print(Twitter.scrap(args.username))
+    browser_name = args.browser if args.browser is not None else "chrome"
+    print(Twitter.scrap(args.username,browser_name))
 
-#last updated - 22nd August,2020
+#last updated - 11th September,2020
     
     
