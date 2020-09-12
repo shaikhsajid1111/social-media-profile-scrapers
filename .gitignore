@@ -133,3 +133,4 @@ dmypy.json
 /test.py
 /test
 /set_cookies.py
+/proxies.py
