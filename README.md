@@ -40,7 +40,6 @@
     example
     ```
     python twitter.py barackObama --browser firefox
-    
     ```
     if ```--browser``` argument is not passed, chrome is used by default. **currently only firefox and chrome is supported**
     - for more help enter command 
@@ -50,9 +49,7 @@
     example
     ```
     python instagram.py -h
-
-
-
+    ```
 ## Tech
 
 - [chromedriver](https://chromedriver.chromium.org) or [gecko Driver](https://github.com/mozilla/geckodriver/releases)
@@ -61,7 +58,8 @@
 - [wedriver_manager](https://pypi.org/project/webdriver-manager/)
 
 
-
+## Screenshot
+![](screenshot/output.png)
 
 
 ## LICENSE 
