@@ -89,10 +89,18 @@ class Quora:
                 shares = detail_count[1]
                 posts = detail_count[2]
                 followers = detail_count[3]
-                followings = detail_count[4]
+                
+                #followings = detail_count[4]
+                          
             except:
                 questions,shares,posts,followers,followings = ''    
-    
+            try:
+                more_button = driver.find_element_by_name("ChevronDown").click()
+                popup = driver.find_element_by_class_name("qu-zIndex--popover")
+                all_divs = popup.find_elements_by_css_selector("div")
+                followings = all_divs[0]
+            except:
+                followings = ""
             try:
                 more = driver.find_elements_by_css_selector("div.q-text.qu-truncateLines--2")
             except:
@@ -107,7 +115,7 @@ class Quora:
                 'shares' : shares.text.strip().split(" ")[0],
                 'posts' : posts.text.strip().split(" ")[0],
                 'followers' : followers.text.strip().split(" ")[0],
-                'following' : followings.text.strip().split(" ")[0],
+                'following' : followings.text.split(" ")[0],
                 'more_details' : [more[i].text.replace('\n','').replace('\r','') for i in range(len(more))] if type(more) is not str else ""
             }
             driver.close()
