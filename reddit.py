@@ -41,16 +41,23 @@ class Reddit:
                 browser_option = ChromeOptions()
                 browser_option = set_properties(browser_option)    
                 driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
+                driver.maximize_window()
             elif browser_name.lower() == "firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
                 driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),options=browser_option)
+                driver.maximize_window()
             else:
                 driver = "Browser Not Supported!"
             return driver
         except Exception as ex:
             print(ex)
     
+    @staticmethod
+    def close_driver(driver):
+        driver.close()
+        driver.quit()
+
     @staticmethod
     def scrap(username,browser_name):
         try:
@@ -67,22 +74,22 @@ class Reddit:
             
             
             wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains("{}".format(username)))
+            element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'.bVfceI5F_twrnRcVO1328')))
             
-            name = driver.find_element_by_tag_name("h4").text
+            name = driver.title.split(" ")[0]
             bio = driver.find_element_by_class_name("bVfceI5F_twrnRcVO1328").text.strip()
             try:
                 banner = driver.find_element_by_class_name("_2ZyL7luKQghNeMnczY3gqW").get_attribute("style")
             except:
                 banner = None
-            
-            profile = driver.find_element_by_css_selector("img._2TN8dEgAQbSyKntWpSPYM7").get_attribute("src")   
+                                                                
+            profile = driver.find_element_by_class_name('_3Y33QReHCnUZm9ewFAsk8C').get_attribute("src")   
             
             karma = driver.find_element_by_id("profile--id-card--highlight-tooltip--karma")    
            
             cake_date = driver.find_element_by_id("profile--id-card--highlight-tooltip--cakeday")    
             
-            return {
+            data =  {
                     "name" : name,
                     "bio" : bio,
                     "banner" : banner.split('(')[-1].split(')')[0] if banner is not None else "",
@@ -90,6 +97,8 @@ class Reddit:
                     "karma" : karma.text,
                     "cake_date" : cake_date.text
                 }
+            Reddit.close_driver(driver)
+            return data
         except Exception as ex:
             driver.close()
             driver.quit()
