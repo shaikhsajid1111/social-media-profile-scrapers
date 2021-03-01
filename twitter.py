@@ -59,34 +59,42 @@ class Twitter:
             URL = "https://twitter.com/{}".format(username)
 
                 
-            driver = Twitter.init_driver(browser_name)  
+            driver = Twitter.init_driver(browser_name)  #initialize driver
             try:
-                driver.get(URL)
+                driver.get(URL)  #try to navigate to URL
             except AttributeError:
+                #if there is attribute error it means driver is not set
                 print("Driver is not set")
                 exit()
-            wait = WebDriverWait(driver, 30)
-            element = wait.until(EC.title_contains("@"))
+            wait = WebDriverWait(driver, 30) #wait for 30
+            element = wait.until(EC.title_contains("@")) #until the tab loads and contains '@' symbol
+            #take title tag text from tab and split it with "(" and take 0th element from the splitted list
+            full_name = driver.title.split("(")[0]  
             
-            full_name = driver.title.split("(")[0]
        
             try:
+                #try to find banner image 
                 banner_image = driver.find_element_by_css_selector("img.css-9pa8cd").get_attribute("src")
             except NoSuchElementException:
                 banner_image = ""
             
     
             try:
+                #if svg with aria-label as "verified account" is present then account is verified
                 driver.find_element_by_css_selector("svg[aria-label='Verified account']")
                 is_verified = True
             except NoSuchElementException:
+                #if svg is not found that means account is not verified
                 is_verified = False
+            #twitter's profile route is twitter.com/user_name_of_profile/photo
             profile_image = "https://twitter.com/{}/photo".format(username.lower())
-       
-            follow_div = driver.find_element_by_css_selector("div.css-1dbjc4n.r-1mf7evn").text
-            followers = driver.find_element_by_xpath("//a[contains(@href,'followers')]").get_attribute("title")
+
+            follow_div = driver.find_element_by_css_selector("div.css-1dbjc4n.r-1mf7evn").text #how many following for given profile
+
+            followers = driver.find_element_by_xpath("//a[contains(@href,'followers')]").get_attribute("text")
             
             try:
+                #user's bio
                 bio = driver.find_element_by_css_selector("div[data-testid='UserDescription']").text
             except NoSuchElementException:
                 bio = ""
@@ -122,7 +130,7 @@ class Twitter:
                  "location" : location,
                  "website" : website,
                  "bio" : bio,
-                 "followers" : followers,
+                 "followers" : followers.split(" ")[0],
                  "following" : follow_div.split(" ")[0],
                  "joined_date" : joined_date
 
@@ -146,6 +154,6 @@ if __name__ == '__main__':
     browser_name = args.browser if args.browser is not None else "chrome"
     print(Twitter.scrap(args.username,browser_name))
 
-#last updated - 11th September,2020
+#last updated - 1st March,2021
     
     
