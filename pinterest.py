@@ -1,94 +1,67 @@
 try:
     import argparse
-    from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options as ChromeOptions
-    from selenium.webdriver.firefox.options import Options as FirefoxOptions
+    from fake_headers import Headers
+    import requests
     import json
-    from fake_headers import Headers    
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
-    from webdriver_manager.chrome import ChromeDriverManager
-    from webdriver_manager.firefox import GeckoDriverManager
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
-    print(ex)    
- 
+    print(ex)
+
 class Pinterest:
     '''This class scraps pinterest and returns a dict containing all user data'''
-    @staticmethod   
-    def init_driver(browser_name:str):
-        """Initialize webdriver"""
-        def set_properties(browser_option):
-            """Set Properties of webdriver"""
-            ua = Headers().generate()      #fake user agent
-            browser_option.add_argument('--headless')
-            browser_option.add_argument('--disable-extensions')
-            browser_option.add_argument('--incognito')
-            browser_option.add_argument('--disable-gpu')
-            browser_option.add_argument('--log-level=3')
-            browser_option.add_argument(f'user-agent={ua}')
-            browser_option.add_argument('--disable-notifications')
-            browser_option.add_argument('--disable-popup-blocking')
-            return browser_option
-        try:
-            browser_name = browser_name.strip().title()
-
-            ua = Headers().generate()      #fake user agent
-            #automating and opening URL in headless browser
-            if browser_name.lower() == "chrome":
-                browser_option = ChromeOptions()
-                browser_option = set_properties(browser_option)    
-                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
-            elif browser_name.lower() == "firefox":
-                browser_option = FirefoxOptions()
-                browser_option = set_properties(browser_option)
-                driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(),options=browser_option)
-            else:
-                driver = "Browser Not Supported!"
-            return driver
-        except Exception as ex:
-            print(ex)
-    
     @staticmethod
-    def scrap(username,browser_name):
+    def _generate_url(username):
+      return "https://in.pinterest.com/resource/UserResource/get/?source_url=%25{}%2F&data=%7B%22options%22%3A%7B%22field_set_key%22%3A%22profile%22%2C%22username%22%3A%22{}%22%2C%22is_mobile_fork%22%3Atrue%7D%2C%22context%22%3A%7B%7D%7D&_=1640428319046".format(username, username)
+
+
+    @staticmethod
+    def _make_request(url):
+      headers = Headers().generate()
+      response = requests.get(url,headers=headers)
+      return response
+
+    @staticmethod
+    def scrap(username):
         try:
-            URL = 'https://in.pinterest.com/{}'.format(username)
-            
+
             try:
-                driver = Pinterest.init_driver(browser_name)  
-                driver.get(URL)
-            except AttributeError:
-                print("Driver is not set")
+                url = Pinterest._generate_url(username)
+                response = Pinterest._make_request(url)
+                if response.status_code == 200:
+                  response = response.json()
+                else:
+                  print("Failed to get Data!")
+                  exit()
+            except Exception as ex:
+                print("Error",ex)
                 exit()
 
-            wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.title_contains("Pinterest"))
-            
-            script = driver.find_element_by_id("initial-state").get_attribute("innerHTML")
-            
-            
-            json_data = json.loads(script)
-            
-            data = json_data['resourceResponses'][0]['response']['data']
-            user_data = data['user']
-            
-            is_verified_merchant = user_data['is_verified_merchant']
-            full_name = user_data['full_name']
-            impressum_url = user_data['impressum_url']
-            pin_count = user_data['pin_count']
-            domain_url = user_data['domain_url']
-            profile_image = user_data['image_xlarge_url']
-            bio = user_data['about']
-            board_count = user_data['board_count']
-            is_indexed = user_data['indexed']
-            follower = user_data['follower_count']
-            following = user_data['following_count']
-            country = user_data['country']
-            location = user_data['location']
-            
+
+
+            json_data = response
+
+            data = json_data['resource_response']['data']
+            id = data['id']
+            is_verified_merchant = data['is_verified_merchant']
+            full_name = data['full_name']
+            impressum_url = data['impressum_url']
+            pin_count = data['pin_count']
+            website_url = data['website_url']
+            profile_image = data['image_xlarge_url']
+            bio = data['about']
+            board_count = data['board_count']
+            is_indexed = data['indexed']
+            follower = data['follower_count']
+            following = data['following_count']
+            country = data['country']
+            location = data['location']
+            profile_views = data['profile_views']
+            interest_following_count = data['interest_following_count']
+            has_published_pins = data['has_published_pins']
+            video_pin_count = data['video_pin_count']
             profile_data = {
+                "id" : id,
                 'full_name' : full_name,
                 'profile_image' : profile_image,
                 'followers' : follower,
@@ -96,29 +69,28 @@ class Pinterest:
                 'bio' : bio,
                 'country' : country,
                 'impressum_url' : impressum_url,
-                'website' : domain_url,
+                'website': website_url,
                 'board_count' : board_count,
+                "is_indexed" : is_indexed,
                 'location' : location,
                 'pin_count' : pin_count,
                 'is_verified' : is_verified_merchant,
-
+                "profile_view" : profile_views,
+                "interest_following_count" : interest_following_count,
+                "has_published_pins" : has_published_pins,
+                "video_pin_count" : video_pin_count
             }
-            driver.close()
-            driver.quit()
-            return profile_data
+
+            return json.dumps(profile_data)
         except Exception as ex:
-            driver.close()
-            driver.quit()
-            print(ex)    
+            print(ex)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("username",help="username to search")
-    parser.add_argument("--browser",help="What browser your PC have?")
 
     args = parser.parse_args()
-    browser_name = args.browser if args.browser is not None else "chrome"
-    print(Pinterest.scrap(args.username,browser_name))
+    print(Pinterest.scrap(args.username))
 
-#last updated - 11th September,2020
+#last updated - 25th December,2021
