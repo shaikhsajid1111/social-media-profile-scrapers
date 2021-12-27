@@ -8,6 +8,7 @@ try:
     from fake_headers import Headers
     from webdriver_manager.chrome import ChromeDriverManager
     from webdriver_manager.firefox import GeckoDriverManager
+    import json
 except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
@@ -16,7 +17,7 @@ except Exception as ex:
 
 '''can scrap only public instagram accounts'''
 class Instagram:
-    @staticmethod   
+    @staticmethod
     def init_driver(browser_name):
         '''init the driver'''
         def set_properties(browser_option):
@@ -34,12 +35,12 @@ class Instagram:
         try:
             browser_name = browser_name.strip().title()
 
-            
+
             #automating and opening URL in headless browser
             if browser_name.lower() == "chrome":
                 browser_option = ChromeOptions()
-                browser_option = set_properties(browser_option)    
-                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) 
+                browser_option = set_properties(browser_option)
+                driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option)
             elif browser_name.lower() == "firefox":
                 browser_option = FirefoxOptions()
                 browser_option = set_properties(browser_option)
@@ -53,21 +54,21 @@ class Instagram:
     def scrap(username,browser_name):
         try:
             URL = 'https://instagram.com/{}'.format(username)
-            
+
             try:
-                driver = Instagram.init_driver(browser_name)  
+                driver = Instagram.init_driver(browser_name)
                 driver.get(URL)
             except AttributeError:
                 print("Driver is not set")
                 exit()
-            
+
             wait = WebDriverWait(driver, 10)
             wait.until(EC.title_contains('@'))
-            
-            
+
+
             data = driver.execute_script('return window._sharedData')['entry_data']
 
-            is_private = data['ProfilePage'][0]['graphql']['user']['is_private']         
+            is_private = data['ProfilePage'][0]['graphql']['user']['is_private']
             profile_page = data['ProfilePage'][0]['graphql']['user']
             bio = profile_page['biography']
             followings = profile_page['edge_follow']['count']
@@ -75,7 +76,7 @@ class Instagram:
             posts_count = profile_page['edge_owner_to_timeline_media']['count']
             profile_image = profile_page['profile_pic_url_hd']
 
-            
+
             profile_data = {
                 'profile_image' : profile_image,
                 'bio' : bio,
@@ -83,14 +84,14 @@ class Instagram:
                 "followers" : followers,
                 "followings" : followings,
                 "is_private" : is_private
-                } 
+                }
             driver.close()
             driver.quit()
-            return profile_data
+            return json.dumps(profile_data)
         except Exception as ex:
             driver.close()
             driver.quit()
-            print(ex)            
+            print(ex)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -102,4 +103,4 @@ if __name__ == '__main__':
 
 
 
-#last updated on 11th September, 2020
+#last updated on 27th December, 2020
