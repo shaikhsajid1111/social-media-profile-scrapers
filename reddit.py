@@ -1,6 +1,6 @@
 try:
     import argparse
-    import selenium
+    import json
     from selenium import webdriver
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -14,14 +14,14 @@ except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
-        
+
 
 
 class Reddit:
-    @staticmethod   
+    @staticmethod
     def init_driver(browser_name):
         def set_properties(browser_option):
-            
+
             ua = Headers().generate()      #fake user agent
             browser_option.add_argument('--headless')
             browser_option.add_argument('--disable-extensions')
@@ -39,7 +39,7 @@ class Reddit:
             #automating and opening URL in headless browser
             if browser_name.lower() == "chrome":
                 browser_option = ChromeOptions()
-                browser_option = set_properties(browser_option)    
+                browser_option = set_properties(browser_option)
                 driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
                 driver.maximize_window()
             elif browser_name.lower() == "firefox":
@@ -52,7 +52,7 @@ class Reddit:
             return driver
         except Exception as ex:
             print(ex)
-    
+
     @staticmethod
     def close_driver(driver):
         driver.close()
@@ -64,47 +64,49 @@ class Reddit:
             URL = "https://reddit.com/user/{}".format(username)
 
             try:
-    
-                driver = Reddit.init_driver(browser_name)  
+
+                driver = Reddit.init_driver(browser_name)
                 driver.get(URL)
             except AttributeError:
                 print("Driver is not set")
                 exit()
-            
-            
-            
+
+
+
             wait = WebDriverWait(driver, 10)
-            element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'.bVfceI5F_twrnRcVO1328')))
-            
+            element = wait.until(EC.presence_of_element_located(
+                (By.ID, 'profile--id-card--highlight-tooltip--karma')))
+
             name = driver.title.split(" ")[0]
             bio = driver.find_element_by_class_name("bVfceI5F_twrnRcVO1328").text.strip()
             try:
                 banner = driver.find_element_by_class_name("_2ZyL7luKQghNeMnczY3gqW").get_attribute("style")
             except:
                 banner = None
-                                                                
-            profile = driver.find_element_by_class_name('_3Y33QReHCnUZm9ewFAsk8C').get_attribute("src")   
-            
-            karma = driver.find_element_by_id("profile--id-card--highlight-tooltip--karma")    
-           
-            cake_date = driver.find_element_by_id("profile--id-card--highlight-tooltip--cakeday")    
-            
+
+            profile = driver.find_element_by_class_name(
+                '_2bLCGrtCCJIMNCZgmAMZFM').get_attribute("src")
+
+            karma = driver.find_element_by_id(
+                "profile--id-card--highlight-tooltip--karma")
+            cake_date = driver.find_element_by_id("profile--id-card--highlight-tooltip--cakeday")
+
             data =  {
                     "name" : name,
                     "bio" : bio,
                     "banner" : banner.split('(')[-1].split(')')[0] if banner is not None else "",
                     "profile_image" : profile,
-                    "karma" : karma.text,
-                    "cake_date" : cake_date.text
+                    "karma": karma.get_attribute("innerHTML"),
+                    "cake_date": cake_date.get_attribute("innerHTML")
                 }
             Reddit.close_driver(driver)
-            return data
+            return json.dumps(data)
         except Exception as ex:
             driver.close()
             driver.quit()
-            print(ex)        
-    
-       
+            print(ex)
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -114,4 +116,4 @@ if __name__ == '__main__':
     browser_name = args.browser if args.browser is not None else "chrome"
     print(Reddit.scrap(args.username,browser_name))
 
-#last updated - 11th September, 2020    
+#last updated - 27th December, 2021
