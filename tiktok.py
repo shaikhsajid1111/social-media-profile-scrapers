@@ -15,9 +15,9 @@ except ModuleNotFoundError:
     print("Please download dependencies from requirement.txt")
 except Exception as ex:
     print(ex)
- 
+
 class Tiktok:
-    @staticmethod   
+    @staticmethod
     def init_driver(browser_name:str):
         def set_properties(browser_option):
             ua = Headers().generate()      #fake user agent
@@ -29,16 +29,16 @@ class Tiktok:
             browser_option.add_argument(f'user-agent={ua}')
             browser_option.add_argument('--disable-notifications')
             browser_option.add_argument('--disable-popup-blocking')
-            
+
             return browser_option
         try:
             browser_name = browser_name.strip().title()
 
             ua = Headers().generate()      #fake user agent
-        
+
             if browser_name.lower() == "chrome":
                 browser_option = ChromeOptions()
-                browser_option = set_properties(browser_option)    
+                browser_option = set_properties(browser_option)
                 driver = webdriver.Chrome(ChromeDriverManager().install(),options=browser_option) #chromedriver's path in first argument
             elif browser_name.lower() == "firefox":
                 browser_option = FirefoxOptions()
@@ -49,70 +49,69 @@ class Tiktok:
             return driver
         except Exception as ex:
             print(ex)
-        
+
     @staticmethod
     def scrap(username,browser_name):
         try:
             URL = 'https://tiktok.com/@{}'.format(username)
-            
-            try: 
-                driver = Tiktok.init_driver(browser_name)  
+
+            try:
+                driver = Tiktok.init_driver(browser_name)
                 driver.get(URL)
             except AttributeError:
                 print("Driver is not set")
                 exit()
-            
-            
+
+
             wait = WebDriverWait(driver, 10)
             element = wait.until(EC.title_contains("@{}".format(username)))
-           
-           
-            script_tag = driver.find_element_by_id("__NEXT_DATA__").get_attribute("innerHTML")
-            json_data = json.loads(script_tag)
-                
-            #dict_keys(['props', 'page', 'query', 'buildId', 'assetPrefix', 'isFallback', 'customServer'])
-            user_data = json_data['props']['pageProps']['userData']
+
+            state_data = driver.execute_script("return window['SIGI_STATE']")
+            user_data = state_data['UserModule']['users'][username.lower()]
+            stats_data = state_data['UserModule']['stats'][username.lower()]
             sec_id = user_data['secUid']
-            user_id = user_data['userId']
-            is_secret = user_data['isSecret']
+            user_id = user_data['id']
+            is_secret = user_data['secret']
             unique_name = user_data['uniqueId']
             signature = user_data['signature']
-            covers = user_data['coversMedium']
-            following = user_data['following']
-            fans = user_data['fans']
-            heart = user_data['heart']
-            video = user_data['video']
+            avatar = user_data['avatarMedium']
+            following = stats_data['followingCount']
+            followers = stats_data['followerCount']
+            heart = stats_data['heart']
+            heart_count = stats_data['heartCount']
+            video = stats_data['videoCount']
             is_verified = user_data['verified']
-            
+
             profile_data =  {
                     'sec_id' : sec_id,
-                    'user_id' : user_id,
+                    'id' : user_id,
                     'is_secret' : is_secret,
                     'username' : unique_name,
                     'bio' : signature,
-                    'cover_image' : covers,
+                    'avatar_image' : avatar,
                     'following' : following,
-                    'fans' : fans,
+                    'followers' : followers,
                     'hearts' : heart,
-                    'video' : video,
+                    'heart_count' : heart_count,
+                    'video_count' : video,
                     'is_verified' : is_verified,
                 }
             driver.close()
             driver.quit()
-            return profile_data
+            return json.dumps(profile_data)
         except Exception as ex:
             driver.close()
             driver.quit()
-            print(ex)        
+            print(ex)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("username",help="username to search")
     parser.add_argument("--browser",help="What browser your PC have?")
-    
+
     args = parser.parse_args()
     browser_name = args.browser if args.browser is not None else "chrome"
     print(Tiktok.scrap(args.username,browser_name))
 
-    
-    
-   #last updated - 11th September, 2020
+
+
+   #last updated - 18th March, 2022
