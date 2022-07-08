@@ -13,15 +13,15 @@
 
 
 ## Available Social Media
-* Twitter 
-* Facebook 
-* Instagram 
-* Reddit    
-* tiktok 
-* Medium 
-* Quora 
-* Pinterest 
-* Github 
+* Twitter
+* Facebook
+* Instagram
+* Reddit
+* TikTok
+* Medium
+* Quora
+* Pinterest
+* Github
 
 
 
@@ -36,25 +36,26 @@
 1. Open terminal in project's directory and enter command
     ```
     python SCRIPT_NAME USERNAME --browser BROWSER_NAME
-    ``` 
+    ```
     example
     ```
     python twitter.py barackObama --browser firefox
     ```
     if ```--browser``` argument is not passed, chrome is used by default. **currently only firefox and chrome is supported**
-    - for more help enter command 
+    - for more help enter command
     ```
     python SCRIPT_NAME -h
-    ``` 
+    ```
     example
     ```
     python instagram.py -h
     ```
+    Note: Pinterest script doesn't need browser. Just use it like ```python pinterest.py username```
 ## Tech
 
 - [chromedriver](https://chromedriver.chromium.org) or [gecko Driver](https://github.com/mozilla/geckodriver/releases)
 - [selenium](https://selenium-python.readthedocs.io/installation.html)
-- [fake-headers](https://pypi.org/project/fake-headers/)   
+- [fake-headers](https://pypi.org/project/fake-headers/)
 - [wedriver_manager](https://pypi.org/project/webdriver-manager/)
 
 
@@ -62,9 +63,9 @@
 ![](screenshot/output.png)
 
 
-## LICENSE 
+## LICENSE
 
-### Apache License 2.0                                 
+### Apache License 2.0
 
 **If You have suggestions for more social media. Let me know :wink:**
 
