@@ -94,8 +94,15 @@ class Quora:
                 shares = shares[0] if len(shares) > 0 else ""
                 posts = [text.split(' ')[0] for text in details_text if "Posts" in text ]
                 posts = posts[0] if len(posts) > 0 else ""
-                followers = [text.split(' ')[0] for text in details_text if "Follower" in text ]
+                follwing_follower_element = driver.find_element_by_css_selector(
+                    '.q-flex.qu-flexDirection--column.qu-mt--tiny')
+                elements = follwing_follower_element.find_elements_by_css_selector(
+                    '.CssComponent-sc-1oskqb9-0.AbstractSeparatedItems___StyledCssComponent-sc-46kfvf-0')
+                followers = [element.text.split(' ')[0] for element in elements if "follower" in element.text ]
                 followers = followers[0] if len(followers) > 0 else ""
+
+                followings = [element.text.split(' ')[0] for element in elements if "following" in element.text ]
+                followings = followings[0] if len(followings) > 0 else ""
             except Exception as ex:
                 print(ex)
                 questions = shares = posts = followers = answers_count = ''
@@ -108,17 +115,6 @@ class Quora:
             except:
                 bio = ""
             bio = bio_text if type(bio) is not str else ""
-
-            try:
-                more_button = driver.find_element_by_name("ChevronDown").click()
-                popup = driver.find_element_by_class_name("qu-zIndex--popover")
-                all_divs = popup.find_elements_by_css_selector("div")
-                followings = all_divs[0].text.split(" ")[0]
-            except Exception as ex:
-                print(ex)
-                followings = ""
-                pass
-
             profile_data = {
                 'name'  :name,
                 'profession' : profession,
@@ -148,4 +144,4 @@ if __name__ == '__main__':
     browser_name = args.browser if args.browser is not None else "chrome"
     print(Quora.scrap(args.username,browser_name))
 
-#last updated - 27th December,2021
+#last updated - 02nd October, 2022
