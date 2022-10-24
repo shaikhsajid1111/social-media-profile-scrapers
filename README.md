@@ -50,7 +50,7 @@
     ```
     python instagram.py -h
     ```
-    Note: Pinterest and Twitter script doesn't need browser. Just use it like ```python pinterest.py username```
+    Note: Pinterest, Medium and Twitter script doesn't need browser. Just use it like ```python pinterest.py username```
 ## Tech
 
 - [chromedriver](https://chromedriver.chromium.org) or [gecko Driver](https://github.com/mozilla/geckodriver/releases)
