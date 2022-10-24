@@ -1,0 +1,2451 @@
+query UserProfileQuery(
+  $id: ID
+  $username: ID
+  $homepagePostsLimit: PaginationLimit
+  $homepagePostsFrom: String = null
+  $includeDistributedResponses: Boolean = true
+) {
+  userResult(id: $id, username: $username) {
+    __typename
+    ... on User {
+      id
+      name
+      viewerIsUser
+      viewerEdge {
+        id
+        isFollowing
+        __typename
+      }
+      homePostsPublished: homepagePostsConnection(paging: { limit: 1 }) {
+        posts {
+          id
+          __typename
+        }
+        __typename
+      }
+      ...UserCanonicalizer_user
+      ...UserProfileScreen_user
+      ...EntityDrivenSubscriptionLandingPageScreen_writer
+      ...useShouldShowEntityDrivenSubscription_creator
+      __typename
+    }
+  }
+}
+
+fragment UserCanonicalizer_user on User {
+  id
+  username
+  hasSubdomain
+  customDomainState {
+    live {
+      domain
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment UserProfileScreen_user on User {
+  __typename
+  id
+  viewerIsUser
+  ...PublisherHeader_publisher
+  ...PublisherHomepagePosts_publisher
+  ...UserSubdomainFlow_user
+  ...UserProfileMetadata_user
+  ...SuspendedBannerLoader_user
+  ...useAnalytics_user
+}
+
+fragment PublisherHeader_publisher on Publisher {
+  id
+  ...PublisherHeaderBackground_publisher
+  ...PublisherHeaderNameplate_publisher
+  ...PublisherHeaderActions_publisher
+  ...PublisherHeaderNav_publisher
+  __typename
+}
+
+fragment PublisherHeaderBackground_publisher on Publisher {
+  __typename
+  id
+  customStyleSheet {
+    ...PublisherHeaderBackground_customStyleSheet
+    __typename
+    id
+  }
+  ... on Collection {
+    colorPalette {
+      tintBackgroundSpectrum {
+        backgroundColor
+        __typename
+      }
+      __typename
+    }
+    isAuroraVisible
+    legacyHeaderBackgroundImage {
+      id
+      originalWidth
+      focusPercentX
+      focusPercentY
+      __typename
+    }
+    ...collectionTintBackgroundTheme_collection
+    __typename
+    id
+  }
+  ...publisherUrl_publisher
+}
+
+fragment PublisherHeaderBackground_customStyleSheet on CustomStyleSheet {
+  id
+  global {
+    colorPalette {
+      background {
+        rgb
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  header {
+    headerScale
+    backgroundImageDisplayMode
+    backgroundImageVerticalAlignment
+    backgroundColorDisplayMode
+    backgroundColor {
+      alpha
+      rgb
+      ...getHexFromColorValue_colorValue
+      ...getOpaqueHexFromColorValue_colorValue
+      __typename
+    }
+    secondaryBackgroundColor {
+      ...getHexFromColorValue_colorValue
+      __typename
+    }
+    postBackgroundColor {
+      ...getHexFromColorValue_colorValue
+      __typename
+    }
+    backgroundImage {
+      ...MetaHeaderBackground_imageMetadata
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment getHexFromColorValue_colorValue on ColorValue {
+  rgb
+  alpha
+  __typename
+}
+
+fragment getOpaqueHexFromColorValue_colorValue on ColorValue {
+  rgb
+  __typename
+}
+
+fragment MetaHeaderBackground_imageMetadata on ImageMetadata {
+  id
+  originalWidth
+  __typename
+}
+
+fragment collectionTintBackgroundTheme_collection on Collection {
+  colorPalette {
+    ...collectionTintBackgroundTheme_colorPalette
+    __typename
+  }
+  customStyleSheet {
+    id
+    ...collectionTintBackgroundTheme_customStyleSheet
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment collectionTintBackgroundTheme_colorPalette on ColorPalette {
+  ...customTintBackgroundTheme_colorPalette
+  __typename
+}
+
+fragment customTintBackgroundTheme_colorPalette on ColorPalette {
+  tintBackgroundSpectrum {
+    ...ThemeUtil_colorSpectrum
+    __typename
+  }
+  __typename
+}
+
+fragment ThemeUtil_colorSpectrum on ColorSpectrum {
+  backgroundColor
+  ...ThemeUtilInterpolateHelpers_colorSpectrum
+  __typename
+}
+
+fragment ThemeUtilInterpolateHelpers_colorSpectrum on ColorSpectrum {
+  colorPoints {
+    ...ThemeUtil_colorPoint
+    __typename
+  }
+  __typename
+}
+
+fragment ThemeUtil_colorPoint on ColorPoint {
+  color
+  point
+  __typename
+}
+
+fragment collectionTintBackgroundTheme_customStyleSheet on CustomStyleSheet {
+  id
+  ...customTintBackgroundTheme_customStyleSheet
+  __typename
+}
+
+fragment customTintBackgroundTheme_customStyleSheet on CustomStyleSheet {
+  id
+  global {
+    colorPalette {
+      primary {
+        colorPalette {
+          ...customTintBackgroundTheme_colorPalette
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment publisherUrl_publisher on Publisher {
+  id
+  __typename
+  ... on Collection {
+    ...collectionUrl_collection
+    __typename
+    id
+  }
+  ... on User {
+    ...userUrl_user
+    __typename
+    id
+  }
+}
+
+fragment collectionUrl_collection on Collection {
+  id
+  domain
+  slug
+  __typename
+}
+
+fragment userUrl_user on User {
+  __typename
+  id
+  customDomainState {
+    live {
+      domain
+      __typename
+    }
+    __typename
+  }
+  hasSubdomain
+  username
+}
+
+fragment PublisherHeaderNameplate_publisher on Publisher {
+  ...PublisherAvatar_publisher
+  ...PublisherHeaderLogo_publisher
+  ...PublisherFollowersCount_publisher
+  __typename
+}
+
+fragment PublisherAvatar_publisher on Publisher {
+  __typename
+  ... on Collection {
+    id
+    ...CollectionAvatar_collection
+    __typename
+  }
+  ... on User {
+    id
+    ...UserAvatar_user
+    __typename
+  }
+}
+
+fragment CollectionAvatar_collection on Collection {
+  name
+  avatar {
+    id
+    __typename
+  }
+  ...collectionUrl_collection
+  __typename
+  id
+}
+
+fragment UserAvatar_user on User {
+  __typename
+  id
+  imageId
+  mediumMemberAt
+  name
+  username
+  ...userUrl_user
+}
+
+fragment PublisherHeaderLogo_publisher on Publisher {
+  __typename
+  id
+  customStyleSheet {
+    id
+    header {
+      logoImage {
+        id
+        originalHeight
+        originalWidth
+        __typename
+      }
+      appNameColor {
+        ...getHexFromColorValue_colorValue
+        __typename
+      }
+      appNameTreatment
+      __typename
+    }
+    __typename
+  }
+  name
+  ... on Collection {
+    isAuroraVisible
+    logo {
+      id
+      originalHeight
+      originalWidth
+      __typename
+    }
+    __typename
+    id
+  }
+  ...CustomHeaderTooltip_publisher
+  ...publisherUrl_publisher
+}
+
+fragment CustomHeaderTooltip_publisher on Publisher {
+  __typename
+  id
+  customStyleSheet {
+    id
+    header {
+      appNameTreatment
+      nameTreatment
+      __typename
+    }
+    __typename
+  }
+  ... on Collection {
+    isAuroraVisible
+    slug
+    __typename
+    id
+  }
+}
+
+fragment PublisherFollowersCount_publisher on Publisher {
+  id
+  __typename
+  id
+  ... on Collection {
+    slug
+    subscriberCount
+    __typename
+    id
+  }
+  ... on User {
+    socialStats {
+      followerCount
+      __typename
+    }
+    username
+    __typename
+    id
+  }
+}
+
+fragment PublisherHeaderActions_publisher on Publisher {
+  __typename
+  ...MetaHeaderPubMenu_publisher
+  ... on Collection {
+    ...CollectionFollowButton_collection
+    __typename
+    id
+  }
+  ... on User {
+    ...FollowAndSubscribeButtons_user
+    __typename
+    id
+  }
+}
+
+fragment MetaHeaderPubMenu_publisher on Publisher {
+  __typename
+  ... on Collection {
+    ...MetaHeaderPubMenu_publisher_collection
+    __typename
+    id
+  }
+  ... on User {
+    ...MetaHeaderPubMenu_publisher_user
+    __typename
+    id
+  }
+}
+
+fragment MetaHeaderPubMenu_publisher_collection on Collection {
+  id
+  slug
+  name
+  domain
+  newsletterV3 {
+    slug
+    __typename
+    id
+  }
+  ...MutePopoverOptions_collection
+  __typename
+}
+
+fragment MutePopoverOptions_collection on Collection {
+  id
+  __typename
+}
+
+fragment MetaHeaderPubMenu_publisher_user on User {
+  id
+  username
+  ...MutePopoverOptions_creator
+  __typename
+}
+
+fragment MutePopoverOptions_creator on User {
+  id
+  __typename
+}
+
+fragment CollectionFollowButton_collection on Collection {
+  __typename
+  id
+  name
+  slug
+  ...collectionUrl_collection
+  ...SusiClickable_collection
+}
+
+fragment SusiClickable_collection on Collection {
+  ...SusiContainer_collection
+  __typename
+  id
+}
+
+fragment SusiContainer_collection on Collection {
+  name
+  ...SignInOptions_collection
+  ...SignUpOptions_collection
+  __typename
+  id
+}
+
+fragment SignInOptions_collection on Collection {
+  id
+  name
+  __typename
+}
+
+fragment SignUpOptions_collection on Collection {
+  id
+  name
+  __typename
+}
+
+fragment FollowAndSubscribeButtons_user on User {
+  ...UserFollowButton_user
+  ...UserSubscribeButton_user
+  __typename
+  id
+}
+
+fragment UserFollowButton_user on User {
+  ...UserFollowButtonSignedIn_user
+  ...UserFollowButtonSignedOut_user
+  __typename
+  id
+}
+
+fragment UserFollowButtonSignedIn_user on User {
+  id
+  name
+  __typename
+}
+
+fragment UserFollowButtonSignedOut_user on User {
+  id
+  ...SusiClickable_user
+  __typename
+}
+
+fragment SusiClickable_user on User {
+  ...SusiContainer_user
+  __typename
+  id
+}
+
+fragment SusiContainer_user on User {
+  ...SignInOptions_user
+  ...SignUpOptions_user
+  __typename
+  id
+}
+
+fragment SignInOptions_user on User {
+  id
+  name
+  __typename
+}
+
+fragment SignUpOptions_user on User {
+  id
+  name
+  __typename
+}
+
+fragment UserSubscribeButton_user on User {
+  id
+  isPartnerProgramEnrolled
+  name
+  viewerEdge {
+    id
+    isFollowing
+    isUser
+    __typename
+  }
+  viewerIsUser
+  newsletterV3 {
+    id
+    ...useNewsletterV3Subscription_newsletterV3
+    __typename
+  }
+  ...useNewsletterV3Subscription_user
+  ...MembershipUpsellModal_user
+  __typename
+}
+
+fragment useNewsletterV3Subscription_newsletterV3 on NewsletterV3 {
+  id
+  type
+  slug
+  name
+  collection {
+    slug
+    __typename
+    id
+  }
+  user {
+    id
+    name
+    username
+    newsletterV3 {
+      id
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment useNewsletterV3Subscription_user on User {
+  id
+  username
+  newsletterV3 {
+    ...useNewsletterV3Subscription_newsletterV3
+    __typename
+    id
+  }
+  __typename
+}
+
+fragment MembershipUpsellModal_user on User {
+  id
+  name
+  imageId
+  postSubscribeMembershipUpsellShownAt
+  newsletterV3 {
+    id
+    __typename
+  }
+  __typename
+}
+
+fragment PublisherHeaderNav_publisher on Publisher {
+  __typename
+  id
+  customStyleSheet {
+    navigation {
+      navItems {
+        name
+        ...PublisherHeaderNavLink_headerNavigationItem
+        __typename
+      }
+      __typename
+    }
+    __typename
+    id
+  }
+  ...PublisherHeaderNavLink_publisher
+  ... on Collection {
+    domain
+    isAuroraVisible
+    slug
+    navItems {
+      tagSlug
+      title
+      url
+      __typename
+    }
+    __typename
+    id
+  }
+  ... on User {
+    customDomainState {
+      live {
+        domain
+        __typename
+      }
+      __typename
+    }
+    hasSubdomain
+    username
+    about
+    homePostsPublished: homepagePostsConnection(paging: { limit: 1 }) {
+      posts {
+        id
+        __typename
+      }
+      __typename
+    }
+    __typename
+    id
+  }
+}
+
+fragment PublisherHeaderNavLink_headerNavigationItem on HeaderNavigationItem {
+  href
+  name
+  tags {
+    id
+    normalizedTagSlug
+    __typename
+  }
+  type
+  __typename
+}
+
+fragment PublisherHeaderNavLink_publisher on Publisher {
+  __typename
+  id
+  ... on Collection {
+    slug
+    __typename
+    id
+  }
+}
+
+fragment PublisherHomepagePosts_publisher on Publisher {
+  __typename
+  id
+  homepagePostsConnection(
+    paging: { limit: $homepagePostsLimit, from: $homepagePostsFrom }
+    includeDistributedResponses: $includeDistributedResponses
+  ) {
+    posts {
+      ...PostPreview_post
+      __typename
+    }
+    pagingInfo {
+      next {
+        from
+        limit
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  ...CardByline_publisher
+  ...NewsletterV3Promo_publisher
+  ...PublisherHomepagePosts_user
+}
+
+fragment PostPreview_post on Post {
+  id
+  creator {
+    ...PostPreview_user
+    __typename
+    id
+  }
+  collection {
+    ...CardByline_collection
+    __typename
+    id
+  }
+  ...InteractivePostBody_postPreview
+  firstPublishedAt
+  isLocked
+  isSeries
+  isShortform
+  latestPublishedAt
+  inResponseToCatalogResult {
+    __typename
+  }
+  previewImage {
+    id
+    focusPercentX
+    focusPercentY
+    __typename
+  }
+  readingTime
+  sequence {
+    slug
+    __typename
+  }
+  title
+  uniqueSlug
+  visibility
+  ...CardByline_post
+  ...PostFooterActionsBar_post
+  ...InResponseToEntityPreview_post
+  ...PostScrollTracker_post
+  ...ReadMore_post
+  ...HighDensityPreview_post
+  __typename
+}
+
+fragment PostPreview_user on User {
+  __typename
+  name
+  username
+  ...CardByline_user
+  id
+}
+
+fragment CardByline_user on User {
+  __typename
+  id
+  name
+  username
+  mediumMemberAt
+  socialStats {
+    followerCount
+    __typename
+  }
+  ...userUrl_user
+  ...UserMentionTooltip_user
+}
+
+fragment UserMentionTooltip_user on User {
+  id
+  name
+  username
+  bio
+  imageId
+  mediumMemberAt
+  ...UserAvatar_user
+  ...UserFollowButton_user
+  __typename
+}
+
+fragment CardByline_collection on Collection {
+  __typename
+  id
+  name
+  ...collectionUrl_collection
+}
+
+fragment InteractivePostBody_postPreview on Post {
+  extendedPreviewContent(
+    truncationConfig: {
+      previewParagraphsWordCountThreshold: 400
+      minimumWordLengthForTruncation: 150
+      truncateAtEndOfSentence: true
+      showFullImageCaptions: true
+      shortformPreviewParagraphsWordCountThreshold: 30
+      shortformMinimumWordLengthForTruncation: 30
+    }
+  ) {
+    bodyModel {
+      ...PostBody_bodyModel
+      __typename
+    }
+    isFullContent
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment PostBody_bodyModel on RichText {
+  sections {
+    name
+    startIndex
+    textLayout
+    imageLayout
+    backgroundImage {
+      id
+      originalHeight
+      originalWidth
+      __typename
+    }
+    videoLayout
+    backgroundVideo {
+      videoId
+      originalHeight
+      originalWidth
+      previewImageId
+      __typename
+    }
+    __typename
+  }
+  paragraphs {
+    id
+    ...PostBodySection_paragraph
+    __typename
+  }
+  ...normalizedBodyModel_richText
+  __typename
+}
+
+fragment PostBodySection_paragraph on Paragraph {
+  name
+  ...PostBodyParagraph_paragraph
+  __typename
+  id
+}
+
+fragment PostBodyParagraph_paragraph on Paragraph {
+  name
+  type
+  ...ImageParagraph_paragraph
+  ...TextParagraph_paragraph
+  ...IframeParagraph_paragraph
+  ...MixtapeParagraph_paragraph
+  ...CodeBlockParagraph_paragraph
+  __typename
+  id
+}
+
+fragment ImageParagraph_paragraph on Paragraph {
+  href
+  layout
+  metadata {
+    id
+    originalHeight
+    originalWidth
+    focusPercentX
+    focusPercentY
+    alt
+    __typename
+  }
+  ...Markups_paragraph
+  ...ParagraphRefsMapContext_paragraph
+  ...PostAnnotationsMarker_paragraph
+  __typename
+  id
+}
+
+fragment Markups_paragraph on Paragraph {
+  name
+  text
+  hasDropCap
+  dropCapImage {
+    ...MarkupNode_data_dropCapImage
+    __typename
+    id
+  }
+  markups {
+    type
+    start
+    end
+    href
+    anchorType
+    userId
+    linkMetadata {
+      httpStatus
+      __typename
+    }
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment MarkupNode_data_dropCapImage on ImageMetadata {
+  ...DropCap_image
+  __typename
+  id
+}
+
+fragment DropCap_image on ImageMetadata {
+  id
+  originalHeight
+  originalWidth
+  __typename
+}
+
+fragment ParagraphRefsMapContext_paragraph on Paragraph {
+  id
+  name
+  text
+  __typename
+}
+
+fragment PostAnnotationsMarker_paragraph on Paragraph {
+  ...PostViewNoteCard_paragraph
+  __typename
+  id
+}
+
+fragment PostViewNoteCard_paragraph on Paragraph {
+  name
+  __typename
+  id
+}
+
+fragment TextParagraph_paragraph on Paragraph {
+  type
+  hasDropCap
+  codeBlockMetadata {
+    mode
+    lang
+    __typename
+  }
+  ...Markups_paragraph
+  ...ParagraphRefsMapContext_paragraph
+  __typename
+  id
+}
+
+fragment IframeParagraph_paragraph on Paragraph {
+  iframe {
+    mediaResource {
+      id
+      iframeSrc
+      iframeHeight
+      iframeWidth
+      title
+      __typename
+    }
+    __typename
+  }
+  layout
+  ...getEmbedlyCardUrlParams_paragraph
+  ...Markups_paragraph
+  __typename
+  id
+}
+
+fragment getEmbedlyCardUrlParams_paragraph on Paragraph {
+  type
+  iframe {
+    mediaResource {
+      iframeSrc
+      __typename
+    }
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment MixtapeParagraph_paragraph on Paragraph {
+  type
+  mixtapeMetadata {
+    href
+    mediaResource {
+      mediumCatalog {
+        id
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  ...GenericMixtapeParagraph_paragraph
+  __typename
+  id
+}
+
+fragment GenericMixtapeParagraph_paragraph on Paragraph {
+  text
+  mixtapeMetadata {
+    href
+    thumbnailImageId
+    __typename
+  }
+  markups {
+    start
+    end
+    type
+    href
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment CodeBlockParagraph_paragraph on Paragraph {
+  codeBlockMetadata {
+    lang
+    mode
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment normalizedBodyModel_richText on RichText {
+  paragraphs {
+    markups {
+      type
+      __typename
+    }
+    codeBlockMetadata {
+      lang
+      mode
+      __typename
+    }
+    ...getParagraphHighlights_paragraph
+    ...getParagraphPrivateNotes_paragraph
+    __typename
+  }
+  sections {
+    startIndex
+    ...getSectionEndIndex_section
+    __typename
+  }
+  ...getParagraphStyles_richText
+  ...getParagraphSpaces_richText
+  __typename
+}
+
+fragment getParagraphHighlights_paragraph on Paragraph {
+  name
+  __typename
+  id
+}
+
+fragment getParagraphPrivateNotes_paragraph on Paragraph {
+  name
+  __typename
+  id
+}
+
+fragment getSectionEndIndex_section on Section {
+  startIndex
+  __typename
+}
+
+fragment getParagraphStyles_richText on RichText {
+  paragraphs {
+    text
+    type
+    __typename
+  }
+  sections {
+    ...getSectionEndIndex_section
+    __typename
+  }
+  __typename
+}
+
+fragment getParagraphSpaces_richText on RichText {
+  paragraphs {
+    layout
+    metadata {
+      originalHeight
+      originalWidth
+      id
+      __typename
+    }
+    type
+    ...paragraphExtendsImageGrid_paragraph
+    __typename
+  }
+  ...getSeriesParagraphTopSpacings_richText
+  ...getPostParagraphTopSpacings_richText
+  __typename
+}
+
+fragment paragraphExtendsImageGrid_paragraph on Paragraph {
+  layout
+  type
+  __typename
+  id
+}
+
+fragment getSeriesParagraphTopSpacings_richText on RichText {
+  paragraphs {
+    id
+    __typename
+  }
+  sections {
+    startIndex
+    __typename
+  }
+  __typename
+}
+
+fragment getPostParagraphTopSpacings_richText on RichText {
+  paragraphs {
+    layout
+    text
+    codeBlockMetadata {
+      lang
+      mode
+      __typename
+    }
+    __typename
+  }
+  sections {
+    startIndex
+    __typename
+  }
+  __typename
+}
+
+fragment CardByline_post on Post {
+  ...DraftStatus_post
+  ...Star_post
+  __typename
+  id
+}
+
+fragment DraftStatus_post on Post {
+  id
+  pendingCollection {
+    id
+    creator {
+      id
+      __typename
+    }
+    ...BoldCollectionName_collection
+    __typename
+  }
+  statusForCollection
+  creator {
+    id
+    __typename
+  }
+  isPublished
+  __typename
+}
+
+fragment BoldCollectionName_collection on Collection {
+  id
+  name
+  __typename
+}
+
+fragment Star_post on Post {
+  id
+  creator {
+    id
+    __typename
+  }
+  __typename
+}
+
+fragment PostFooterActionsBar_post on Post {
+  id
+  visibility
+  isPublished
+  allowResponses
+  postResponses {
+    count
+    __typename
+  }
+  isLimitedState
+  creator {
+    id
+    __typename
+  }
+  collection {
+    id
+    __typename
+  }
+  ...BookmarkButton_post
+  ...MultiVote_post
+  ...SharePostButtons_post
+  ...PostFooterSocialPopover_post
+  ...OverflowMenuButtonWithNegativeSignal_post
+  __typename
+}
+
+fragment BookmarkButton_post on Post {
+  visibility
+  ...SusiClickable_post
+  ...AddToCatalogBookmarkButton_post
+  __typename
+  id
+}
+
+fragment SusiClickable_post on Post {
+  id
+  mediumUrl
+  ...SusiContainer_post
+  __typename
+}
+
+fragment SusiContainer_post on Post {
+  id
+  __typename
+}
+
+fragment AddToCatalogBookmarkButton_post on Post {
+  ...AddToCatalogBase_post
+  __typename
+  id
+}
+
+fragment AddToCatalogBase_post on Post {
+  id
+  __typename
+}
+
+fragment MultiVote_post on Post {
+  id
+  creator {
+    id
+    ...SusiClickable_user
+    __typename
+  }
+  isPublished
+  ...SusiClickable_post
+  collection {
+    id
+    slug
+    __typename
+  }
+  isLimitedState
+  ...MultiVoteCount_post
+  __typename
+}
+
+fragment MultiVoteCount_post on Post {
+  id
+  ...PostVotersNetwork_post
+  __typename
+}
+
+fragment PostVotersNetwork_post on Post {
+  id
+  voterCount
+  recommenders {
+    name
+    __typename
+  }
+  __typename
+}
+
+fragment SharePostButtons_post on Post {
+  id
+  isLimitedState
+  visibility
+  mediumUrl
+  ...SharePostButton_post
+  __typename
+}
+
+fragment SharePostButton_post on Post {
+  id
+  __typename
+}
+
+fragment PostFooterSocialPopover_post on Post {
+  id
+  mediumUrl
+  title
+  ...SharePostButton_post
+  __typename
+}
+
+fragment OverflowMenuButtonWithNegativeSignal_post on Post {
+  id
+  ...OverflowMenuWithNegativeSignal_post
+  ...CreatorActionOverflowPopover_post
+  __typename
+}
+
+fragment OverflowMenuWithNegativeSignal_post on Post {
+  id
+  creator {
+    id
+    __typename
+  }
+  collection {
+    id
+    __typename
+  }
+  ...OverflowMenuItemUndoClaps_post
+  __typename
+}
+
+fragment OverflowMenuItemUndoClaps_post on Post {
+  id
+  clapCount
+  ...ClapMutation_post
+  __typename
+}
+
+fragment ClapMutation_post on Post {
+  __typename
+  id
+  clapCount
+  ...MultiVoteCount_post
+}
+
+fragment CreatorActionOverflowPopover_post on Post {
+  allowResponses
+  id
+  statusForCollection
+  isLocked
+  isPublished
+  clapCount
+  mediumUrl
+  pinnedAt
+  pinnedByCreatorAt
+  curationEligibleAt
+  mediumUrl
+  responseDistribution
+  visibility
+  inResponseToPostResult {
+    __typename
+  }
+  inResponseToCatalogResult {
+    __typename
+  }
+  pendingCollection {
+    id
+    name
+    creator {
+      id
+      __typename
+    }
+    avatar {
+      id
+      __typename
+    }
+    domain
+    slug
+    __typename
+  }
+  creator {
+    id
+    ...MutePopoverOptions_creator
+    ...auroraHooks_publisher
+    __typename
+  }
+  collection {
+    id
+    name
+    creator {
+      id
+      __typename
+    }
+    avatar {
+      id
+      __typename
+    }
+    domain
+    slug
+    ...MutePopoverOptions_collection
+    ...auroraHooks_publisher
+    __typename
+  }
+  ...useIsPinnedInContext_post
+  ...NewsletterV3EmailToSubscribersMenuItem_post
+  ...OverflowMenuItemUndoClaps_post
+  __typename
+}
+
+fragment auroraHooks_publisher on Publisher {
+  __typename
+  ... on Collection {
+    isAuroraEligible
+    isAuroraVisible
+    viewerEdge {
+      id
+      isEditor
+      __typename
+    }
+    __typename
+    id
+  }
+  ... on User {
+    isAuroraVisible
+    __typename
+    id
+  }
+}
+
+fragment useIsPinnedInContext_post on Post {
+  id
+  collection {
+    id
+    __typename
+  }
+  pendingCollection {
+    id
+    __typename
+  }
+  pinnedAt
+  pinnedByCreatorAt
+  __typename
+}
+
+fragment NewsletterV3EmailToSubscribersMenuItem_post on Post {
+  id
+  creator {
+    id
+    newsletterV3 {
+      id
+      subscribersCount
+      __typename
+    }
+    __typename
+  }
+  isNewsletter
+  isAuthorNewsletter
+  __typename
+}
+
+fragment InResponseToEntityPreview_post on Post {
+  id
+  inResponseToEntityType
+  __typename
+}
+
+fragment PostScrollTracker_post on Post {
+  id
+  collection {
+    id
+    __typename
+  }
+  sequence {
+    sequenceId
+    __typename
+  }
+  __typename
+}
+
+fragment ReadMore_post on Post {
+  mediumUrl
+  readingTime
+  ...usePostUrl_post
+  __typename
+  id
+}
+
+fragment usePostUrl_post on Post {
+  id
+  creator {
+    ...userUrl_user
+    __typename
+    id
+  }
+  collection {
+    id
+    domain
+    slug
+    __typename
+  }
+  isSeries
+  mediumUrl
+  sequence {
+    slug
+    __typename
+  }
+  uniqueSlug
+  __typename
+}
+
+fragment HighDensityPreview_post on Post {
+  id
+  title
+  previewImage {
+    id
+    focusPercentX
+    focusPercentY
+    __typename
+  }
+  extendedPreviewContent(
+    truncationConfig: {
+      previewParagraphsWordCountThreshold: 400
+      minimumWordLengthForTruncation: 150
+      truncateAtEndOfSentence: true
+      showFullImageCaptions: true
+      shortformPreviewParagraphsWordCountThreshold: 30
+      shortformMinimumWordLengthForTruncation: 30
+    }
+  ) {
+    subtitle
+    __typename
+  }
+  ...HighDensityFooter_post
+  __typename
+}
+
+fragment HighDensityFooter_post on Post {
+  id
+  readingTime
+  tags {
+    ...TopicPill_tag
+    __typename
+  }
+  ...BookmarkButton_post
+  ...ExpandablePostCardOverflowButton_post
+  ...OverflowMenuButtonWithNegativeSignal_post
+  __typename
+}
+
+fragment TopicPill_tag on Tag {
+  __typename
+  id
+  displayTitle
+  normalizedTagSlug
+}
+
+fragment ExpandablePostCardOverflowButton_post on Post {
+  creator {
+    id
+    __typename
+  }
+  ...ExpandablePostCardEditorWriterButton_post
+  ...ExpandablePostCardReaderButton_post
+  __typename
+  id
+}
+
+fragment ExpandablePostCardEditorWriterButton_post on Post {
+  id
+  collection {
+    id
+    name
+    slug
+    __typename
+  }
+  allowResponses
+  clapCount
+  visibility
+  mediumUrl
+  responseDistribution
+  ...useIsPinnedInContext_post
+  ...CopyFriendLinkMenuItem_post
+  ...NewsletterV3EmailToSubscribersMenuItem_post
+  ...OverflowMenuItemUndoClaps_post
+  __typename
+}
+
+fragment CopyFriendLinkMenuItem_post on Post {
+  id
+  __typename
+}
+
+fragment ExpandablePostCardReaderButton_post on Post {
+  id
+  collection {
+    id
+    __typename
+  }
+  creator {
+    id
+    __typename
+  }
+  clapCount
+  ...ClapMutation_post
+  __typename
+}
+
+fragment CardByline_publisher on Publisher {
+  __typename
+  ... on User {
+    id
+    ...CardByline_user
+    __typename
+  }
+  ... on Collection {
+    id
+    ...CardByline_collection
+    __typename
+  }
+}
+
+fragment NewsletterV3Promo_publisher on Publisher {
+  __typename
+  ... on User {
+    ...NewsletterV3Promo_publisher_User
+    __typename
+    id
+  }
+  ... on Collection {
+    ...NewsletterV3Promo_publisher_Collection
+    __typename
+    id
+  }
+}
+
+fragment NewsletterV3Promo_publisher_User on User {
+  id
+  username
+  name
+  viewerEdge {
+    isUser
+    __typename
+    id
+  }
+  newsletterV3 {
+    id
+    ...NewsletterV3Promo_newsletterV3
+    __typename
+  }
+  __typename
+}
+
+fragment NewsletterV3Promo_newsletterV3 on NewsletterV3 {
+  slug
+  name
+  description
+  promoHeadline
+  promoBody
+  ...NewsletterV3SubscribeButton_newsletterV3
+  ...NewsletterV3SubscribeByEmail_newsletterV3
+  __typename
+  id
+}
+
+fragment NewsletterV3SubscribeButton_newsletterV3 on NewsletterV3 {
+  id
+  name
+  slug
+  type
+  user {
+    id
+    name
+    username
+    __typename
+  }
+  collection {
+    slug
+    ...SusiClickable_collection
+    ...collectionDefaultBackgroundTheme_collection
+    __typename
+    id
+  }
+  ...SusiClickable_newsletterV3
+  ...useNewsletterV3Subscription_newsletterV3
+  __typename
+}
+
+fragment collectionDefaultBackgroundTheme_collection on Collection {
+  colorPalette {
+    ...collectionDefaultBackgroundTheme_colorPalette
+    __typename
+  }
+  customStyleSheet {
+    id
+    ...collectionDefaultBackgroundTheme_customStyleSheet
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment collectionDefaultBackgroundTheme_colorPalette on ColorPalette {
+  ...customDefaultBackgroundTheme_colorPalette
+  __typename
+}
+
+fragment customDefaultBackgroundTheme_colorPalette on ColorPalette {
+  highlightSpectrum {
+    ...ThemeUtil_colorSpectrum
+    __typename
+  }
+  defaultBackgroundSpectrum {
+    ...ThemeUtil_colorSpectrum
+    __typename
+  }
+  tintBackgroundSpectrum {
+    ...ThemeUtil_colorSpectrum
+    __typename
+  }
+  __typename
+}
+
+fragment collectionDefaultBackgroundTheme_customStyleSheet on CustomStyleSheet {
+  id
+  ...customDefaultBackgroundTheme_customStyleSheet
+  __typename
+}
+
+fragment customDefaultBackgroundTheme_customStyleSheet on CustomStyleSheet {
+  id
+  global {
+    colorPalette {
+      primary {
+        colorPalette {
+          ...customDefaultBackgroundTheme_colorPalette
+          __typename
+        }
+        __typename
+      }
+      background {
+        colorPalette {
+          ...customDefaultBackgroundTheme_colorPalette
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment SusiClickable_newsletterV3 on NewsletterV3 {
+  ...SusiContainer_newsletterV3
+  __typename
+  id
+}
+
+fragment SusiContainer_newsletterV3 on NewsletterV3 {
+  ...SignInOptions_newsletterV3
+  ...SignUpOptions_newsletterV3
+  __typename
+  id
+}
+
+fragment SignInOptions_newsletterV3 on NewsletterV3 {
+  id
+  name
+  __typename
+}
+
+fragment SignUpOptions_newsletterV3 on NewsletterV3 {
+  id
+  name
+  __typename
+}
+
+fragment NewsletterV3SubscribeByEmail_newsletterV3 on NewsletterV3 {
+  id
+  slug
+  type
+  user {
+    id
+    name
+    username
+    __typename
+  }
+  collection {
+    ...collectionDefaultBackgroundTheme_collection
+    ...collectionUrl_collection
+    __typename
+    id
+  }
+  __typename
+}
+
+fragment NewsletterV3Promo_publisher_Collection on Collection {
+  id
+  slug
+  domain
+  name
+  newsletterV3 {
+    id
+    ...NewsletterV3Promo_newsletterV3
+    __typename
+  }
+  __typename
+}
+
+fragment PublisherHomepagePosts_user on User {
+  id
+  ...useShowAuthorNewsletterV3Promo_user
+  __typename
+}
+
+fragment useShowAuthorNewsletterV3Promo_user on User {
+  id
+  username
+  newsletterV3 {
+    id
+    showPromo
+    slug
+    __typename
+  }
+  __typename
+}
+
+fragment UserSubdomainFlow_user on User {
+  id
+  hasCompletedProfile
+  name
+  bio
+  imageId
+  ...UserCompleteProfileDialog_user
+  ...UserSubdomainOnboardingDialog_user
+  __typename
+}
+
+fragment UserCompleteProfileDialog_user on User {
+  id
+  name
+  bio
+  imageId
+  hasCompletedProfile
+  __typename
+}
+
+fragment UserSubdomainOnboardingDialog_user on User {
+  id
+  customDomainState {
+    pending {
+      status
+      __typename
+    }
+    live {
+      status
+      __typename
+    }
+    __typename
+  }
+  username
+  __typename
+}
+
+fragment UserProfileMetadata_user on User {
+  id
+  username
+  name
+  bio
+  socialStats {
+    followerCount
+    followingCount
+    __typename
+  }
+  ...userUrl_user
+  ...UserProfileMetadataHelmet_user
+  __typename
+}
+
+fragment UserProfileMetadataHelmet_user on User {
+  username
+  name
+  imageId
+  twitterScreenName
+  navItems {
+    title
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment SuspendedBannerLoader_user on User {
+  id
+  isSuspended
+  __typename
+}
+
+fragment useAnalytics_user on User {
+  id
+  imageId
+  name
+  username
+  __typename
+}
+
+fragment EntityDrivenSubscriptionLandingPageScreen_writer on User {
+  name
+  imageId
+  id
+  username
+  isPartnerProgramEnrolled
+  referredMembershipCustomHeadline
+  referredMembershipCustomBody
+  customStyleSheet {
+    ...CustomThemeProvider_customStyleSheet
+    ...CustomBackgroundWrapper_customStyleSheet
+    ...MetaHeader_customStyleSheet
+    __typename
+    id
+  }
+  ...MetaHeader_publisher
+  ...userUrl_user
+  __typename
+}
+
+fragment CustomThemeProvider_customStyleSheet on CustomStyleSheet {
+  id
+  ...customDefaultBackgroundTheme_customStyleSheet
+  ...customStyleSheetFontTheme_customStyleSheet
+  __typename
+}
+
+fragment customStyleSheetFontTheme_customStyleSheet on CustomStyleSheet {
+  id
+  global {
+    fonts {
+      font1 {
+        name
+        __typename
+      }
+      font2 {
+        name
+        __typename
+      }
+      font3 {
+        name
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment CustomBackgroundWrapper_customStyleSheet on CustomStyleSheet {
+  id
+  global {
+    colorPalette {
+      background {
+        ...getHexFromColorValue_colorValue
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment MetaHeader_customStyleSheet on CustomStyleSheet {
+  id
+  header {
+    headerScale
+    horizontalAlignment
+    __typename
+  }
+  ...MetaHeaderBackground_customStyleSheet
+  ...MetaHeaderEngagement_customStyleSheet
+  ...MetaHeaderLogo_customStyleSheet
+  ...MetaHeaderNavVertical_customStyleSheet
+  ...MetaHeaderTagline_customStyleSheet
+  ...MetaHeaderThemeProvider_customStyleSheet
+  __typename
+}
+
+fragment MetaHeaderBackground_customStyleSheet on CustomStyleSheet {
+  id
+  header {
+    headerScale
+    backgroundImageDisplayMode
+    backgroundImageVerticalAlignment
+    backgroundColorDisplayMode
+    backgroundColor {
+      ...getHexFromColorValue_colorValue
+      ...getOpaqueHexFromColorValue_colorValue
+      __typename
+    }
+    secondaryBackgroundColor {
+      ...getHexFromColorValue_colorValue
+      __typename
+    }
+    postBackgroundColor {
+      ...getHexFromColorValue_colorValue
+      __typename
+    }
+    backgroundImage {
+      ...MetaHeaderBackground_imageMetadata
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment MetaHeaderEngagement_customStyleSheet on CustomStyleSheet {
+  ...MetaHeaderNav_customStyleSheet
+  __typename
+  id
+}
+
+fragment MetaHeaderNav_customStyleSheet on CustomStyleSheet {
+  id
+  navigation {
+    navItems {
+      ...MetaHeaderNav_headerNavigationItem
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment MetaHeaderNav_headerNavigationItem on HeaderNavigationItem {
+  name
+  tagSlugs
+  ...MetaHeaderNavLink_headerNavigationItem
+  __typename
+}
+
+fragment MetaHeaderNavLink_headerNavigationItem on HeaderNavigationItem {
+  name
+  ...getNavItemHref_headerNavigationItem
+  __typename
+}
+
+fragment getNavItemHref_headerNavigationItem on HeaderNavigationItem {
+  href
+  type
+  tags {
+    id
+    normalizedTagSlug
+    __typename
+  }
+  __typename
+}
+
+fragment MetaHeaderLogo_customStyleSheet on CustomStyleSheet {
+  id
+  header {
+    nameColor {
+      ...getHexFromColorValue_colorValue
+      __typename
+    }
+    nameTreatment
+    postNameTreatment
+    logoImage {
+      ...MetaHeaderLogo_imageMetadata
+      __typename
+    }
+    logoScale
+    __typename
+  }
+  __typename
+}
+
+fragment MetaHeaderLogo_imageMetadata on ImageMetadata {
+  id
+  originalWidth
+  originalHeight
+  ...PublisherLogo_image
+  __typename
+}
+
+fragment PublisherLogo_image on ImageMetadata {
+  id
+  originalHeight
+  originalWidth
+  __typename
+}
+
+fragment MetaHeaderNavVertical_customStyleSheet on CustomStyleSheet {
+  id
+  navigation {
+    navItems {
+      ...MetaHeaderNavLink_headerNavigationItem
+      __typename
+    }
+    __typename
+  }
+  ...MetaHeaderNav_customStyleSheet
+  __typename
+}
+
+fragment MetaHeaderTagline_customStyleSheet on CustomStyleSheet {
+  id
+  header {
+    taglineColor {
+      ...getHexFromColorValue_colorValue
+      __typename
+    }
+    taglineTreatment
+    __typename
+  }
+  __typename
+}
+
+fragment MetaHeaderThemeProvider_customStyleSheet on CustomStyleSheet {
+  id
+  ...useMetaHeaderTheme_customStyleSheet
+  __typename
+}
+
+fragment useMetaHeaderTheme_customStyleSheet on CustomStyleSheet {
+  ...customDefaultBackgroundTheme_customStyleSheet
+  global {
+    colorPalette {
+      primary {
+        colorPalette {
+          tintBackgroundSpectrum {
+            ...ThemeUtil_colorSpectrum
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  header {
+    backgroundColor {
+      colorPalette {
+        tintBackgroundSpectrum {
+          ...ThemeUtil_colorSpectrum
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    postBackgroundColor {
+      colorPalette {
+        tintBackgroundSpectrum {
+          ...ThemeUtil_colorSpectrum
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    backgroundImage {
+      id
+      __typename
+    }
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment MetaHeader_publisher on Publisher {
+  __typename
+  name
+  ...MetaHeaderEngagement_publisher
+  ...MetaHeaderLogo_publisher
+  ...MetaHeaderNavVertical_publisher
+  ...MetaHeaderTagline_publisher
+  ...MetaHeaderThemeProvider_publisher
+  ...MetaHeaderActions_publisher
+  ...MetaHeaderTop_publisher
+  ...MetaHeaderNavLink_publisher
+  ... on Collection {
+    id
+    favicon {
+      id
+      __typename
+    }
+    tagline
+    ...CollectionNavigationContextProvider_collection
+    __typename
+  }
+  ... on User {
+    id
+    bio
+    ...UserProfileCatalogsLink_publisher
+    __typename
+  }
+}
+
+fragment MetaHeaderEngagement_publisher on Publisher {
+  __typename
+  ...MetaHeaderNav_publisher
+  ...PublisherAboutLink_publisher
+  ...PublisherFollowButton_publisher
+  ...PublisherFollowersCount_publisher
+  ... on Collection {
+    creator {
+      id
+      __typename
+    }
+    customStyleSheet {
+      id
+      ...CustomThemeProvider_customStyleSheet
+      __typename
+    }
+    __typename
+    id
+  }
+  ... on User {
+    ...UserProfileCatalogsLink_publisher
+    ...UserSubscribeButton_user
+    customStyleSheet {
+      id
+      ...CustomThemeProvider_customStyleSheet
+      __typename
+    }
+    __typename
+    id
+  }
+}
+
+fragment MetaHeaderNav_publisher on Publisher {
+  id
+  ...MetaHeaderNavLink_publisher
+  __typename
+}
+
+fragment MetaHeaderNavLink_publisher on Publisher {
+  id
+  ...getNavItemHref_publisher
+  __typename
+}
+
+fragment getNavItemHref_publisher on Publisher {
+  id
+  ...publisherUrl_publisher
+  __typename
+}
+
+fragment PublisherAboutLink_publisher on Publisher {
+  __typename
+  id
+  ... on Collection {
+    slug
+    __typename
+    id
+  }
+  ... on User {
+    ...userUrl_user
+    __typename
+    id
+  }
+}
+
+fragment PublisherFollowButton_publisher on Publisher {
+  __typename
+  ... on Collection {
+    ...CollectionFollowButton_collection
+    __typename
+    id
+  }
+  ... on User {
+    ...UserFollowButton_user
+    __typename
+    id
+  }
+}
+
+fragment UserProfileCatalogsLink_publisher on Publisher {
+  __typename
+  id
+  ... on User {
+    ...userUrl_user
+    homePostsPublished: homepagePostsConnection(paging: { limit: 1 }) {
+      posts {
+        id
+        __typename
+      }
+      __typename
+    }
+    __typename
+    id
+  }
+}
+
+fragment MetaHeaderLogo_publisher on Publisher {
+  __typename
+  id
+  name
+  ... on Collection {
+    logo {
+      ...MetaHeaderLogo_imageMetadata
+      ...PublisherLogo_image
+      __typename
+      id
+    }
+    __typename
+    id
+  }
+  ...auroraHooks_publisher
+}
+
+fragment MetaHeaderNavVertical_publisher on Publisher {
+  id
+  ...PublisherAboutLink_publisher
+  ...MetaHeaderNav_publisher
+  ...MetaHeaderNavLink_publisher
+  __typename
+}
+
+fragment MetaHeaderTagline_publisher on Publisher {
+  __typename
+  ... on Collection {
+    tagline
+    __typename
+    id
+  }
+  ... on User {
+    bio
+    __typename
+    id
+  }
+}
+
+fragment MetaHeaderThemeProvider_publisher on Publisher {
+  __typename
+  customStyleSheet {
+    ...MetaHeaderThemeProvider_customStyleSheet
+    __typename
+    id
+  }
+  ... on Collection {
+    colorPalette {
+      ...customDefaultBackgroundTheme_colorPalette
+      __typename
+    }
+    __typename
+    id
+  }
+}
+
+fragment MetaHeaderActions_publisher on Publisher {
+  __typename
+  ...MetaHeaderPubMenu_publisher
+  ...SearchWidget_publisher
+  ... on Collection {
+    id
+    creator {
+      id
+      __typename
+    }
+    customStyleSheet {
+      navigation {
+        navItems {
+          name
+          __typename
+        }
+        __typename
+      }
+      __typename
+      id
+    }
+    ...CollectionAvatar_collection
+    ...CollectionMetabarActionsPopover_collection
+    ...MetaHeaderActions_collection_common
+    __typename
+  }
+  ... on User {
+    id
+    ...UserAvatar_user
+    __typename
+  }
+}
+
+fragment SearchWidget_publisher on Publisher {
+  __typename
+  ... on Collection {
+    id
+    slug
+    name
+    domain
+    __typename
+  }
+  ... on User {
+    id
+    name
+    __typename
+  }
+  ...algoliaSearch_publisher
+}
+
+fragment algoliaSearch_publisher on Publisher {
+  __typename
+  id
+}
+
+fragment CollectionMetabarActionsPopover_collection on Collection {
+  id
+  slug
+  isAuroraEligible
+  isAuroraVisible
+  newsletterV3 {
+    id
+    slug
+    __typename
+  }
+  ...collectionUrl_collection
+  __typename
+}
+
+fragment MetaHeaderActions_collection_common on Collection {
+  creator {
+    id
+    __typename
+  }
+  __typename
+  id
+}
+
+fragment MetaHeaderTop_publisher on Publisher {
+  __typename
+  ... on Collection {
+    slug
+    ...CollectionMetabarActionsPopover_collection
+    ...CollectionAvatar_collection
+    ...MetaHeaderTop_collection
+    __typename
+    id
+  }
+  ... on User {
+    username
+    id
+    __typename
+  }
+}
+
+fragment MetaHeaderTop_collection on Collection {
+  id
+  creator {
+    id
+    __typename
+  }
+  __typename
+}
+
+fragment CollectionNavigationContextProvider_collection on Collection {
+  id
+  domain
+  slug
+  isAuroraVisible
+  __typename
+}
+
+fragment useShouldShowEntityDrivenSubscription_creator on User {
+  id
+  __typename
+}
