@@ -89,8 +89,7 @@ class Instagram:
     @staticmethod
     def find_profile_image_link(driver):
         try:
-            profile_image = driver.find_element_by_tag_name(
-                "img")
+            profile_image = driver.find_element_by_css_selector('img[alt]')
             return profile_image.get_attribute('src')
         except NoSuchElementException:
             print('Element Not Found')
@@ -104,7 +103,6 @@ class Instagram:
             if 'Posts' in text:
                 text = text.split(" ")[-2]
                 text = text.replace(',', '')
-                print(text)
                 return int(Instagram.value_to_float(text))
         except Exception as ex:
             print("Error at extract_posts_count: {}".format(ex))
@@ -131,11 +129,8 @@ class Instagram:
     @staticmethod
     def find_bio(driver):
         try:
-            elements = driver.find_elements_by_css_selector(
-                'div._aacl._aacp._aacu._aacx._aad6._aade')
-            if len(elements) == 4:
-                return elements[-1].get_attribute('textContent')
-            return ''
+            elements = driver.find_element_by_css_selector('._aa_c  > h1')
+            return elements.get_attribute('textContent')
         except NoSuchElementException:
             print('Element Not Found')
             return ''
@@ -164,9 +159,9 @@ class Instagram:
                 print("Driver is not set")
                 exit()
 
-            wait = WebDriverWait(driver, 10)
+            wait = WebDriverWait(driver, 30)
             wait.until(EC.title_contains('@'))
-            wait.until(EC.presence_of_element_located((By.TAG_NAME, 'img')))
+            wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'img[alt]')))
             description_meta = driver.find_element_by_css_selector(
                 'meta[name="description"]')
             meta_content = description_meta.get_attribute(
@@ -203,4 +198,4 @@ if __name__ == '__main__':
     print(Instagram.scrap(args.username, browser_name))
 
 
-# last updated on 15th October, 2022
+# last updated on 29th December, 2022
