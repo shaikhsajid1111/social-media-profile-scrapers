@@ -1,55 +1,68 @@
+
+import os
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+GECKO_PATH = "/opt/homebrew/bin/geckodriver"
+
+options = FirefoxOptions()
+
+service = FirefoxService(executable_path=GECKO_PATH)
+driver = webdriver.Firefox(service=service, options=options)
+username = "ohjoy"
+profile_url = f"https://www.pinterest.com/{username}/"
+driver.get(profile_url)
+
+time.sleep(20)
+
+#  Name
 try:
-    import argparse
-    from fake_headers import Headers
-    import requests
-    import json
-except ModuleNotFoundError:
-    print("Please download dependencies from requirement.txt")
-except Exception as ex:
-    print(ex)
+    name_element = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.TAG_NAME, "h1"))
+    )
+    name = name_element.text.strip()
+except:
+    name = "Not found"
+
+# Bio 
+try:
+    bio_element = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//*[contains(text(), 'pinterest.com/')]/following::div[1]"))
+    )
+    bio = bio_element.text.strip()
+except:
+    bio = "No bio found"
 
 
-class Pinterest:
-    '''This class scraps pinterest and returns a dict containing all user data'''
-    @staticmethod
-    def _generate_url(username):
-        return "https://pinterest.com/resource/UserResource/get/?source_url=%25{}%2F&data=%7B%22options%22%3A%7B%22field_set_key%22%3A%22profile%22%2C%22username%22%3A%22{}%22%2C%22is_mobile_fork%22%3Atrue%7D%2C%22context%22%3A%7B%7D%7D&_=1640428319046".format(username, username)
+driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+time.sleep(6)
 
-    @staticmethod
-    def _make_request(url):
-        headers = Headers().generate()
-        response = requests.get(url, headers=headers)
-        return response
-
-    @staticmethod
-    def scrap(username):
-        try:
-
-            try:
-                url = Pinterest._generate_url(username)
-                response = Pinterest._make_request(url)
-                if response.status_code == 200:
-                    response = response.json()
-                else:
-                    print("Failed to get Data!")
-                    exit()
-            except Exception as ex:
-                print("Error", ex)
-                exit()
-
-            json_data = response
-            data = json_data['resource_response']['data']
-
-            return json.dumps(data)
-        except Exception as ex:
-            print(ex)
+# Followers
+follower_count = "Not available"
+try:
+    elems = driver.find_elements(By.XPATH, "//*[contains(text(), 'followers')]")
+    for elem in elems:
+        text = elem.text.strip()
+        if "followers" in text.lower():
+            parts = text.lower().replace(",", "").split()
+            for i, part in enumerate(parts):
+                if "followers" in part and i > 0:
+                    follower_count = parts[i - 1]
+                    break
+            if follower_count != "Not available":
+                break
+except:
+    pass
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("username", help="username to search")
+# Output
+print("Name:", name)
+print("Bio:", bio)
+print("Followers:", follower_count)
 
-    args = parser.parse_args()
-    print(Pinterest.scrap(args.username))
-
-# last updated - 8th July,2022
+driver.quit()
