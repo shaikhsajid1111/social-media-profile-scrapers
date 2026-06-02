@@ -1,0 +1,11 @@
+[project]
+name = "crawler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fake-headers>=1.0.2",
+    "pydantic>=2.13.4",
+    "seleniumbase>=4.49.3",
+]

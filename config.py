@@ -1,0 +1,2 @@
+HEADLESS = False
+TIMEOUT = 60
