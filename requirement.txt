@@ -1,4 +1,6 @@
-selenium==3.141.0
-fake-headers==1.0.2
-webdriver_manager==3.2.2
-requests==2.27.1
+curl_cffi
+seleniumbase
+beautifulsoup4
+fake-headers
+requests
+selenium
