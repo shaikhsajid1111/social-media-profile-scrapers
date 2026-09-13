@@ -3,3 +3,4 @@ seleniumbase
 beautifulsoup4
 fake-headers
 requests
+selenium
