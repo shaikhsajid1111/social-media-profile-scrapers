@@ -232,10 +232,12 @@ class CurlCffiClient(BaseFetchClient):
 
     def fetch(self, url: str, *, timeout: float = DEFAULT_TIMEOUT,
               headers: Optional[dict] = None, impersonate: Optional[str] = None,
-              retries: int = 0, **opts: Any) -> FetchResult:
+              proxies: Optional[dict] = None, retries: int = 0,
+              **opts: Any) -> FetchResult:
         from curl_cffi import requests as curl_requests
 
         target = impersonate or self.impersonate
+        use_proxies = proxies or self.proxies
         start = time.monotonic()
         last_error: Optional[Exception] = None
         for attempt in range(max(1, retries + 1)):
@@ -245,7 +247,7 @@ class CurlCffiClient(BaseFetchClient):
                     timeout=timeout,
                     headers=headers,
                     impersonate=target,
-                    proxies=self.proxies,
+                    proxies=use_proxies,
                     verify=self.verify,
                     allow_redirects=True,
                 )
@@ -317,11 +319,13 @@ class SeleniumBaseUCClient(BaseFetchClient):
         return [{"browser": browser, "headless": headless}]
 
     def create_driver(self, browser: str = "chrome", headless: bool = True,
-                      uc: bool = True):
+                      uc: bool = True, proxy: Optional[str] = None):
         """Start a SeleniumBase Driver (UC for Chromium).  Raises on failure."""
         from seleniumbase import Driver
 
         candidates = self._driver_kwargs(browser, headless, uc)
+        if proxy:
+            candidates = [{**c, "proxy": proxy} for c in candidates] + candidates
         last_type_error: Optional[TypeError] = None
         for kwargs in candidates:
             try:
@@ -346,8 +350,8 @@ class SeleniumBaseUCClient(BaseFetchClient):
     def fetch(self, url: str, *, timeout: float = DEFAULT_TIMEOUT,
               browser: str = "chrome", headless: bool = True, uc: bool = True,
               headed_fallback: Union[bool, str] = "auto", render_wait: float = 1.5,
-              keep_browser_open: bool = False, retries: int = 0,
-              **opts: Any) -> FetchResult:
+              keep_browser_open: bool = False, proxy: Optional[str] = None,
+              retries: int = 0, **opts: Any) -> FetchResult:
         """Load ``url`` in a real browser and return the rendered HTML.
 
         Options:
@@ -379,7 +383,7 @@ class SeleniumBaseUCClient(BaseFetchClient):
             driver = None
             try:
                 driver = self.create_driver(browser=browser, headless=try_headless,
-                                            uc=try_uc)
+                                            uc=try_uc, proxy=proxy)
                 try:
                     driver.set_page_load_timeout(timeout)
                 except Exception:
